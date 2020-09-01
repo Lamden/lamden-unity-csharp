@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LamdenMonoTest : MonoBehaviour
 {
@@ -12,6 +13,12 @@ public class LamdenMonoTest : MonoBehaviour
 
     public MasterNodeApi masterNodeApi;
 
+    public InputField inputSKtoVK, inputMsg, inputSig, inputSK, inputVK;
+
+    Wallet wallet;
+
+    public Image imagePing;
+
     // Start is called before the first frame update
     void Start()
     {        
@@ -21,29 +28,74 @@ public class LamdenMonoTest : MonoBehaviour
         //LoadWalletTest();
 
         //NewWalletTest();
+    }
 
-        int id =  masterNodeApi.GetNonce(vk, callBack);
-        
+    public void UpdeateSKandVK()
+    {
+        UpdateSK();
+        UpdateVK();
+    }
+
+    private void UpdateSK()
+    {
+        inputSK.text = wallet.GetSK();
+    }
+
+    private void UpdateVK()
+    {
+        inputVK.text = wallet.GetVK();
+    }
+
+    public void ClickCreateNewWallet()
+    {
+        wallet = new Wallet();
+        wallet.New();
+        UpdeateSKandVK();
+    }
+
+    public void ClickNewWalletFromSk()
+    {
+        wallet = new Wallet();
+        wallet.Load(inputSKtoVK.text);
+        UpdeateSKandVK();
+    }
+
+    public void GetSig()
+    {
+        if(inputMsg.text != "" && wallet != null)
+        {
+            inputSig.text = wallet.GetSignatureString(Encoding.ASCII.GetBytes(inputMsg.text));
+        }
     }
 
     public void Ping()
     {
         int id2 = masterNodeApi.PingServer(callBack);
     }
-    
-    void callBack(int requestID, MasterNodeApi.ApiCall apiCall, string json, bool result)
+
+    public void GetNonce()
     {
-        Debug.Log($"Request:{requestID} of API {apiCall.ToString()} {(result ? "successful": "failed")}: {json}");
+        int id = masterNodeApi.GetNonce(vk, callBack);
     }
 
-   
+    void callBack(int requestID, MasterNodeApi.ApiCall apiCall, string json, bool callCompleted)
+    {
+        Debug.Log($"Request:{requestID} of API {apiCall.ToString()} {(callCompleted ? "successful": "failed")}: {json}");
+        if(apiCall == MasterNodeApi.ApiCall.Ping)
+        {
+            if (callCompleted && json.Contains("online"))
+                imagePing.color = Color.green;
+            else
+                imagePing.color = Color.red;           
+        }
+    }
 
     void LoadWalletTest()
     {
         Wallet wallet = new Wallet();
         wallet.Load(sk);
 
-        byte[] sig = wallet.GetSignature(msgBytes);
+        byte[] sig = wallet.GetSignatureBytes(msgBytes);
 
         Debug.Log(Helper.ByteArrayToHexString(sig).ToLower());
 
@@ -62,7 +114,7 @@ public class LamdenMonoTest : MonoBehaviour
         Wallet wallet = new Wallet();
         wallet.New();
 
-        byte[] sig = wallet.GetSignature(msgBytes);
+        byte[] sig = wallet.GetSignatureBytes(msgBytes);
 
         Debug.Log(Helper.ByteArrayToHexString(sig).ToLower());
 

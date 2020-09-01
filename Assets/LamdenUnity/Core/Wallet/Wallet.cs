@@ -19,28 +19,33 @@ public class Wallet
     {
         byte[] skBytes = Helper.StringToByteArray(sk, 64);
         Debug.Log($"original: {sk}, decoded: {Helper.ByteArrayToHexString(skBytes)}");
-        keyPair = new KeyPair(sk);        
-    }   
+        keyPair = new KeyPair(sk);
+    }
 
-    public byte[] GetSignature(byte[] msg)
+    public string GetSignatureString(byte[] msg)
+    {
+        return Helper.ByteArrayToHexString(GetSignatureBytes(msg));
+    }
+
+    public byte[] GetSignatureBytes(byte[] msg)
     {
         if (keyPair == null)
             throw new Exception("Key pair not initialized");
 
-        if(msg == null)
+        if (msg == null)
             throw new Exception("Msg cannot be null");
 
         byte[] sig = new byte[64];
         long sigLen = 0;
-        if (NativeLibsodium.crypto_sign_detached(sig, ref sigLen, msg, msg.Length, keyPair.signingKey) == 0)
+        if (NativeLibsodium.crypto_sign_detached(sig, ref sigLen, msg, msg.Length, keyPair.skBytes) == 0)
             return sig;
         else
             return null;
     }
-       
+
     public bool Verify(byte[] sig, byte[] msg)
     {
-        if(keyPair == null)
+        if (keyPair == null)
             throw new Exception("Key pair not initialized");
 
         if (sig == null)
@@ -49,6 +54,22 @@ public class Wallet
         if (msg == null)
             throw new Exception("Msg cannot be null");
 
-        return NativeLibsodium.crypto_sign_verify_detached(sig, msg, msg.Length, keyPair.verifyKey) == 0 ? true : false;
-    }         
+        return NativeLibsodium.crypto_sign_verify_detached(sig, msg, msg.Length, keyPair.vkBytes) == 0 ? true : false;
+    }
+
+    public string GetVK()
+    {
+        if (keyPair == null)
+            throw new Exception("Key pair not initialized");
+
+        return keyPair.vkString;
+    }
+
+    public string GetSK()
+    {
+        if (keyPair == null)
+            throw new Exception("Key pair not initialized");
+
+        return keyPair.skString;
+    }
 }

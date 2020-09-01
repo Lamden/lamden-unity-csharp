@@ -8,35 +8,32 @@ public class KeyPair
     public const int SKEY_LEN = 64;  // length of the signing (private) key in bytes   
     public const int VKEY_LEN = 32;  // lenght of verification (public) key in bytes
     public const int SEED_LEN = 32;
+        
+    public byte[] skBytes { get; }
+    public string skString { get; }
+
+    public byte[] vkBytes { get; }
+    public string vkString { get; }
 
     public KeyPair()
     {
-        sKey = new byte[SKEY_LEN];
-        vKey = new byte[VKEY_LEN];
-        NativeLibsodium.crypto_sign_keypair(vKey, sKey);
+        skBytes = new byte[SKEY_LEN];
+        vkBytes = new byte[VKEY_LEN];
+        NativeLibsodium.crypto_sign_keypair(vkBytes, skBytes);
+        Debug.Log($"sk: {Helper.ByteArrayToHexString(skBytes)}, vk: {Helper.ByteArrayToHexString(vkBytes)} ");
+        skString = Helper.ByteArrayToHexString(skBytes).Substring(0, 64);
+        vkString = Helper.ByteArrayToHexString(vkBytes);
     }
 
     public KeyPair(string sk)
     {
-        sKey = Helper.StringToByteArray(sk);
-        vKey = new byte[VKEY_LEN];
+        skBytes = Helper.StringToByteArray(sk);
+        vkBytes = new byte[VKEY_LEN];
         byte[] seed = new byte[SEED_LEN];
-        NativeLibsodium.crypto_sign_ed25519_sk_to_seed(seed, sKey);
-        NativeLibsodium.crypto_sign_seed_keypair(vKey, sKey, seed);
-        Debug.Log($"sk: {Helper.ByteArrayToHexString(sKey)}, vk: {Helper.ByteArrayToHexString(vKey)} ");
+        NativeLibsodium.crypto_sign_ed25519_sk_to_seed(seed, skBytes);
+        NativeLibsodium.crypto_sign_seed_keypair(vkBytes, skBytes, seed);
+        Debug.Log($"sk: {Helper.ByteArrayToHexString(skBytes)}, vk: {Helper.ByteArrayToHexString(vkBytes)} ");
+        skString = Helper.ByteArrayToHexString(skBytes);
+        vkString = Helper.ByteArrayToHexString(vkBytes);
     }
-
-    public byte[] signingKey
-    {
-        get { return sKey; }
-    }
-
-    public byte[] verifyKey
-    {
-        get { return vKey; } 
-    }
-
-    private byte[] sKey;      //  Signing Key (SK) represents 32 byte signing key
-    private byte[] vKey;              //  Verify Key (VK) represents a 32 byte verify key
-
 }
