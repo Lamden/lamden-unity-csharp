@@ -24,7 +24,7 @@ public class Wallet
 
     public string GetSignatureString(byte[] msg)
     {
-        return Helper.ByteArrayToHexString(GetSignatureBytes(msg));
+        return Helper.ByteArrayToHexString(GetSignatureBytes(msg)).ToLower();
     }
 
     public byte[] GetSignatureBytes(byte[] msg)

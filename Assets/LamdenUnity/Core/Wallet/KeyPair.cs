@@ -21,8 +21,8 @@ public class KeyPair
         vkBytes = new byte[VKEY_LEN];
         NativeLibsodium.crypto_sign_keypair(vkBytes, skBytes);
         Debug.Log($"sk: {Helper.ByteArrayToHexString(skBytes)}, vk: {Helper.ByteArrayToHexString(vkBytes)} ");
-        skString = Helper.ByteArrayToHexString(skBytes).Substring(0, 64);
-        vkString = Helper.ByteArrayToHexString(vkBytes);
+        skString = Helper.ByteArrayToHexString(skBytes).Substring(0, 64).ToLower();
+        vkString = Helper.ByteArrayToHexString(vkBytes).ToLower();
     }
 
     public KeyPair(string sk)
@@ -33,7 +33,7 @@ public class KeyPair
         NativeLibsodium.crypto_sign_ed25519_sk_to_seed(seed, skBytes);
         NativeLibsodium.crypto_sign_seed_keypair(vkBytes, skBytes, seed);
         Debug.Log($"sk: {Helper.ByteArrayToHexString(skBytes)}, vk: {Helper.ByteArrayToHexString(vkBytes)} ");
-        skString = Helper.ByteArrayToHexString(skBytes);
-        vkString = Helper.ByteArrayToHexString(vkBytes);
+        skString = Helper.ByteArrayToHexString(skBytes).Substring(0, 64).ToLower();
+        vkString = Helper.ByteArrayToHexString(vkBytes).ToLower();
     }
 }

@@ -520,7 +520,7 @@ Canvas:
   m_RenderMode: 0
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
-  m_PixelPerfect: 0
+  m_PixelPerfect: 1
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
@@ -744,7 +744,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -123.7, y: -33.6}
+  m_AnchoredPosition: {x: -126, y: -27}
   m_SizeDelta: {x: 105.099976, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &311302684
@@ -1072,7 +1072,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 384920445}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 261358270}
+        m_MethodName: ClickNewWalletFromSk
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &384920445
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1145,7 +1156,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100.03998, y: -38.600006}
+  m_AnchoredPosition: {x: 97.73999, y: -32}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &414003595
@@ -1585,7 +1596,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 40, y: -158.32}
+  m_AnchoredPosition: {x: 37.700012, y: -151.72}
   m_SizeDelta: {x: 40, y: 23.05}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &627707065
@@ -1745,7 +1756,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 287, y: -212}
+  m_AnchoredPosition: {x: 284.7, y: -205.4}
   m_SizeDelta: {x: 533.9, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &690087634
@@ -2115,7 +2126,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 40, y: -117.77}
+  m_AnchoredPosition: {x: 37.700012, y: -111.16998}
   m_SizeDelta: {x: 40, y: 21.34}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &936052744
@@ -2273,7 +2284,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 287, y: -78.600006}
+  m_AnchoredPosition: {x: 284.7, y: -72}
   m_SizeDelta: {x: 533.9, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1071704013
