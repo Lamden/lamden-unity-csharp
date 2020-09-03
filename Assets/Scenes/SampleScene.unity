@@ -4760,6 +4760,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: LamdenManager
       objectReference: {fileID: 0}
+    - target: {fileID: 2416007758763373163, guid: 6ad5094b5e0e9454c8df3c66be2bcf0c,
+        type: 3}
+      propertyPath: networkInfo.lamden
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2416007758763373162, guid: 6ad5094b5e0e9454c8df3c66be2bcf0c,
         type: 3}
       propertyPath: m_LocalPosition.x
