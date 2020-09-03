@@ -12,7 +12,7 @@ namespace Tests
         [Test]
         public void MasterNodeApiTestsSimplePasses()
         {
-            // Use the Assert class to test conditions
+            
         }
 
         // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use

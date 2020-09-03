@@ -12,7 +12,7 @@ public class MasterNodeApi : Network
 
     int requestIDCounter = 0;
 
-    public enum ApiCall { GetNonce, Ping };
+    public enum ApiCall { GetNonce, Ping, GetContractInfo, GetVariable, GetContractMethods, GetCurrencyBalance, SendTransaction };
 
     public NetworkInfo networkInfo;
 
@@ -26,35 +26,73 @@ public class MasterNodeApi : Network
         SetNetworkInfo(networkInfo);    
     }
 
-
-    /*
-        send(method, path, data, callback){
-    let parms = '';
-    if (Object.keys(data).includes('parms')) {
-        parms = this.createParms(data.parms)
+    public int GetContractInfo(string contractName, Action<int, ApiCall, string, bool> callBack)
+    {
+        return StartRequest(
+            ApiCall.GetContractInfo,
+            Method.GET,
+            "contracts/" + contractName,
+            null,
+            null,
+            callBack);
     }
 
-    let options = {}
-    if (method === 'POST'){
-        let headers = {'Content-Type': 'application/json'}
-        options.method = method
-        options.headers = headers;
-        options.body = data;
+    public int GetVariable(string contractName, string variable, string key, Action<int, ApiCall, string, bool> callBack)
+    {
+        return StartRequest(
+            ApiCall.GetVariable,
+            Method.GET,
+             $"contracts/{contractName}/{variable}",
+            new Dictionary<string, string> { { "key", key} },
+            null,
+            callBack);
+
     }
 
-    return fetch(`${this.url}${path}${parms}`, options)
-        .then(res => {
-            return res.json()
-        } )
-        .then(json => {
-                return callback(json, undefined)
-        })
-        .catch(err => {
-                console.log(err)
-                return callback(undefined, err.toString())
-            })
-        }
-        */
+    public int GetContractMethods(string contractName, Action<int, ApiCall, string, bool> callBack)
+    {
+        return StartRequest(
+            ApiCall.GetContractMethods,
+            Method.GET,
+            $"contracts/{contractName}/methods",
+            null,
+            null,
+            callBack);
+    }
+
+    public int PingServer(Action<int, ApiCall, string, bool> callBack)
+    {
+        return StartRequest(
+            ApiCall.Ping,
+            Method.GET,
+            "ping",
+            null,
+            null,
+            callBack);
+    }
+
+    public int GetCurrencyBalance(string key, Action<int, ApiCall, string, bool> callBack)
+    {
+        return StartRequest(
+            ApiCall.GetCurrencyBalance,
+            Method.GET,
+             $"contracts/currency/balances",
+            new Dictionary<string, string> { { "key", key } },
+            null,
+            callBack);
+    }
+
+    public int SendTransaction(string jsonData, Action<int, ApiCall, string, bool> callBack)
+    {
+        return StartRequest(
+           ApiCall.SendTransaction,
+           Method.POST,
+           null,
+           null,
+           jsonData,
+           callBack);
+    }
+
     public int GetNonce(string sender, Action<int, ApiCall, string, bool> callBack)
     {        
         return StartRequest(
@@ -62,176 +100,71 @@ public class MasterNodeApi : Network
             Method.GET,
             "nonce/" + sender,
             null,
-            callBack);       
-    }
-
-    public int PingServer(Action<int, ApiCall, string, bool> callBack)
-    {       
-        return StartRequest(
-            ApiCall.Ping,
-            Method.GET,
-            "ping",
             null,
             callBack);       
     }
 
-    private int StartRequest(ApiCall apiCall, Method method, string path, object parms, Action<int, ApiCall, string, bool> callBack)
+ 
+
+    private int StartRequest(ApiCall apiCall, Method method, string path, Dictionary<string, string> parms, string jsonData, Action<int, ApiCall, string, bool> callBack)
     {
         int reqID = requestIDCounter++;
-        StartCoroutine(SendRequest(
+        StartCoroutine(
+            SendRequest(
             reqID,
             apiCall,
             method,
             path,
             parms,
+            jsonData,
             callBack));
         return reqID;
     }
 
-    private IEnumerator SendRequest(int requestID, ApiCall apiCall, Method method, string path, object parms, Action<int, ApiCall, string, bool> callBack)
+    private IEnumerator SendRequest(int requestID, ApiCall apiCall, Method method, string path, Dictionary<string, string> parms, string jsonData, Action<int, ApiCall, string, bool> callBack)
     {
-        using (UnityWebRequest req = UnityWebRequest.Get(string.Format(host + path)))
-        {
-            if(method == Method.POST)
-            {
-                //req.SetRequestHeader()
-            }
+        string uri = host;
 
-            req.method = method.ToString();
-            req.timeout = timeout;
-            yield return req.SendWebRequest();
-            if (!string.IsNullOrWhiteSpace(req.error))
+        if (!string.IsNullOrEmpty(path))
+            uri += path;
+
+        if (parms != null)
+        {
+            uri += "?";
+            foreach (var item in parms)
             {
-                callBack?.Invoke(requestID, apiCall, req.error, FAILED);
+                uri += $"{item.Key}={item.Value}";
+            }
+        }
+
+        using (UnityWebRequest request = new UnityWebRequest(uri, method.ToString()))
+        {
+            DownloadHandlerBuffer dH = new DownloadHandlerBuffer();
+            request.downloadHandler = dH;
+
+            if (method == Method.POST)
+            {
+                request.SetRequestHeader("Content-Type", "application/json");
+                byte[] data = System.Text.Encoding.UTF8.GetBytes(jsonData);
+                UploadHandlerRaw upHandler = new UploadHandlerRaw(data);
+                upHandler.contentType = "application/json";
+                request.uploadHandler = upHandler;
+            }
+            
+            request.timeout = timeout;
+            Debug.Log($"Sending web request {requestID} to {uri} with method of {method}");
+            yield return request.SendWebRequest();
+            if (request.isNetworkError || request.isHttpError)
+            {
+                callBack?.Invoke(requestID, apiCall, request.error, FAILED);
             }
             else
             {
-                byte[] result = req.downloadHandler.data;
-                string json = System.Text.Encoding.Default.GetString(result);
+                string json = request.downloadHandler.text;
                 callBack?.Invoke(requestID,apiCall, json, SUCCESS);
             }
         }
     }
-
-    /*
-     
-     async getContractInfo(contractName){
-        let path = `/contracts/${contractName}`
-        return this.send('GET', path, {}, (res, err) => {
-            if (err) return;
-            return res
-        })
-    }
-
-    async getVariable(contract, variable, key = ''){
-        let parms = {};
-        if (validateTypes.isStringWithValue(key)) parms.key = key;
-
-        let path = `/contracts/${contract}/${variable}/`
-        return this.send('GET', path, {parms}, (res, err) => {
-            try{
-                if (res.value) return res.value
-            } catch (e){}
-            return;
-        })
-    }
-
-    async getContractMethods(contract){
-        let path = `/contracts/${contract}/methods`
-        return this.send('GET', path, {}, (res, err) => {
-            try{
-                if (res.methods) return res.methods
-            } catch (e){}
-            return [];
-        })
-        
-    }
-
-    async pingServer(){
-        return this.send('GET', '/ping', {}, (res, err) => {
-            try { 
-                if (res.status === 'online') return true;
-            } 
-            catch (e) {
-                return false;
-            }
-        })
-    }
-
-    async getCurrencyBalance(vk){
-        let balanceRes = await this.getVariable('currency', 'balances', vk)
-        if (isNaN(parseFloat(balanceRes))){
-            return 0;
-        }
-        return parseFloat(balanceRes)
-    }
-
-    async contractExists(contractName){
-        let path = `/contracts/${contractName}`
-        return this.send('GET', path, {}, (res, err) => {
-            try{
-                if (res.name) return true;
-            } catch (e){}
-            return false;
-        })
-    }
-
-    async sendTransaction(data, callback){
-        return this.send('POST', '/', JSON.stringify(data), (res, err) => {
-            if (err){
-                if (callback) {
-                    callback(undefined, err);
-                    return;
-                } 
-                else return err
-            }
-            if (callback) {
-                callback(res, undefined);
-                return
-            }
-            return res;
-        })   
-    }
-
-    async getNonce(sender, callback){
-        if (!validateTypes.isStringHex(sender)) return `${sender} is not a hex string.`
-        let path = `/nonce/${sender}` 
-        return this.send('GET', path, {}, (res, err) => {
-            if (err){
-                if (callback) {
-                    callback(undefined, `Unable to get nonce for "${sender}". ${err}`)
-                    return
-                } 
-                return `Unable to get nonce for "${sender}". ${err}`
-            }
-            if (callback) {
-                callback(res, undefined)
-                return
-            }
-            else return res;
-        })
-    }
-
-    async checkTransaction(hash, callback){
-        const parms = {hash};
-        return this.send('GET', '/tx', {parms}, (res, err) => {
-            if (err){
-                if (callback) {
-                    callback(undefined, err);
-                    return;
-                }
-                else return err
-            }
-            if (callback) {
-                callback(res, undefined);
-                return
-            }
-            return res;
-        })  
-    }
-
-
-    */
 
 
 }

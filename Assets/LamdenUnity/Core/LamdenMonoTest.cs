@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class LamdenMonoTest : MonoBehaviour
 {
-    string vk = "960c002a36c30c3aec8bc670e9b8b40eebcfd545f4e9237579fd7395a21ccebb";
+    string vk = "d41b8ed0d747ca6dfacdc58b78e1dba86cd9616359014eebd5f3443509111120";
+    //string vk = "960c002a36c30c3aec8bc670e9b8b40eebcfd545f4e9237579fd7395a21ccebb";
     string sk = "c8a3c5333aa3b058c4fa16d48db52355ab62ddc8daa9a183706a912e522440b6";
 
     string msg = "this is a message";
@@ -13,7 +14,7 @@ public class LamdenMonoTest : MonoBehaviour
 
     public MasterNodeApi masterNodeApi;
 
-    public InputField inputSKtoVK, inputMsg, inputSig, inputSK, inputVK;
+    public InputField inputSKtoVK, inputMsg, inputSig, inputSK, inputVK, inputContractName, inputContactInfo;
 
     Wallet wallet;
 
@@ -28,6 +29,12 @@ public class LamdenMonoTest : MonoBehaviour
         //LoadWalletTest();
 
         //NewWalletTest();
+
+
+        masterNodeApi.GetVariable("currency", "balances", vk, callBack);
+        masterNodeApi.GetContractMethods("currency", callBack);
+        masterNodeApi.GetCurrencyBalance(vk, callBack);
+
     }
 
     public void UpdeateSKandVK()
@@ -51,6 +58,17 @@ public class LamdenMonoTest : MonoBehaviour
         wallet = new Wallet();
         wallet.New();
         UpdeateSKandVK();
+    }
+
+    public void ClickContractInfo()
+    {
+
+        masterNodeApi.GetContractInfo(inputContractName.text, callBack);
+    }
+
+    public void ClickVariableInfo()
+    {
+        
     }
 
     public void ClickNewWalletFromSk()
@@ -87,7 +105,7 @@ public class LamdenMonoTest : MonoBehaviour
                 imagePing.color = Color.green;
             else
                 imagePing.color = Color.red;           
-        }
+        }     
     }
 
     void LoadWalletTest()

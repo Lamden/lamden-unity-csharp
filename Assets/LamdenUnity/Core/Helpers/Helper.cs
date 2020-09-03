@@ -40,4 +40,14 @@ public class Helper
     {
         return BitConverter.ToString(arr).Replace("-", "");
     }
+
+    public static bool isValidKeyString(string key)
+    {
+        if (string.IsNullOrEmpty(key) ||
+            key.Length < 64 ||
+            !System.Text.RegularExpressions.Regex.IsMatch(key, @"\A\b[0-9a-fA-F]+\b\Z"))
+            return false;
+
+        return true;
+    }
 }
