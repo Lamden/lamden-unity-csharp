@@ -126,11 +126,17 @@ namespace Tests
         public IEnumerator GetContractMethodsTest()
         {
             SetupGood();
-            masterNodeApiGood.GetContractMethods("currency", (bool callCompleted, string json) =>
+            masterNodeApiGood.GetContractMethods("currency", (bool callCompleted, Dictionary<string, Methods> methods) =>
             {
-                Debug.Log($"GetContractMethodsTest results: {json}");
+                Debug.Log($"GetContractMethodsTest results with number of keys: {methods.Keys.Count}");
                 calledBack = true;
                 Assert.True(callCompleted);
+                if (callCompleted)
+                {
+                    Assert.IsNotNull(methods);
+                    Assert.IsTrue(methods.ContainsKey("transfer"));
+                }
+                
             });
             while (!calledBack) { yield return null; }
         }

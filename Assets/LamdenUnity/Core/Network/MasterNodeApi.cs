@@ -53,7 +53,7 @@ public class MasterNodeApi : Network
 
     }
 
-    public void GetContractMethods(string contractName, Action<bool, string> callBack)
+    public void GetContractMethods(string contractName, Action<bool, Dictionary<string, Methods>> callBack)
     {
         StartCoroutine(
            SendRequest(
@@ -63,7 +63,26 @@ public class MasterNodeApi : Network
             null,
              (string json, bool callCompleted) =>
              {
-                 callBack.Invoke(callCompleted, json);
+                 if (callCompleted)
+                 {
+                     try
+                     {
+                         ContractMethods methods = JsonUtility.FromJson<ContractMethods>(json);
+                         Dictionary<string, Methods> methodDic = new Dictionary<string, Methods>();
+                         for (int i = 0; i < methods.methods.Length; i++)
+                         {
+                             methodDic.Add(methods.methods[i].name, methods.methods[i]);
+                         }
+                         callBack.Invoke(callCompleted, methodDic);
+                     }
+                     catch (Exception ex)
+                     {
+                         Debug.LogError($"GetCurrencyBalance: Failed json string: {json}, ex: {ex.Message}");
+                         callBack.Invoke(false, null);
+                     }
+                 }
+                 else
+                     callBack.Invoke(callCompleted, null);
              }));
     }
 

@@ -35,7 +35,7 @@ public class LamdenMonoTest : MonoBehaviour
 
 
         masterNodeApi.GetVariable("currency", "balances", vk, callBack);
-        masterNodeApi.GetContractMethods("currency", callBack);
+        //masterNodeApi.GetContractMethods("currency", callBack);
        // masterNodeApi.GetCurrencyBalance(vk, callBack);
 
     }
@@ -96,9 +96,30 @@ public class LamdenMonoTest : MonoBehaviour
             if (success)
                 imagePing.color = Color.green;
             else
+            {
                 imagePing.color = Color.red;
+                Debug.LogWarning($"Ping failed with response: {json}");
+            }
         });
     }
+
+
+    void PingAction(bool success, string json)
+    {
+        if (success)
+            imagePing.color = Color.green;
+        else
+        {
+            imagePing.color = Color.red;
+            Debug.LogWarning($"Ping failed with response: {json}");
+        }
+    }
+
+    public void Ping2()
+    {
+        masterNodeApi.PingServer(PingAction);
+    }
+
 
 
     public void GetNonce()
