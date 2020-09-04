@@ -17,108 +17,136 @@ public class MasterNodeApi : Network
     public NetworkInfo networkInfo;
 
     public string host { get{ return hosts[Random.Range(0, hosts.Length)];}}
+       
 
     private void Awake()
     {
         SetNetworkInfo(networkInfo);    
     }
 
-    public int GetContractInfo(string contractName, Action<int, ApiCall, string, bool> callBack)
+    public void GetContractInfo(string contractName, Action<bool, string> callBack)
     {
-        return StartRequest(
-            ApiCall.GetContractInfo,
-            Method.GET,
+        StartCoroutine(
+           SendRequest(
+           Method.GET,
             "contracts/" + contractName,
             null,
             null,
-            callBack);
+             (string json, bool callCompleted) =>
+             {
+                 callBack.Invoke(callCompleted, json);
+             }));
     }
 
-    public int GetVariable(string contractName, string variable, string key, Action<int, ApiCall, string, bool> callBack)
+    public void GetVariable(string contractName, string variable, string key, Action<bool, string> callBack)
     {
-        return StartRequest(
-            ApiCall.GetVariable,
+        StartCoroutine(
+           SendRequest(
             Method.GET,
              $"contracts/{contractName}/{variable}",
             new Dictionary<string, string> { { "key", key} },
             null,
-            callBack);
+             (string json, bool callCompleted) =>
+             {                 
+                     callBack.Invoke(callCompleted, json);                 
+             }));
 
     }
 
-    public int GetContractMethods(string contractName, Action<int, ApiCall, string, bool> callBack)
+    public void GetContractMethods(string contractName, Action<bool, string> callBack)
     {
-        return StartRequest(
-            ApiCall.GetContractMethods,
+        StartCoroutine(
+           SendRequest(
             Method.GET,
             $"contracts/{contractName}/methods",
             null,
             null,
-            callBack);
+             (string json, bool callCompleted) =>
+             {
+                 callBack.Invoke(callCompleted, json);
+             }));
     }
 
-    public int PingServer(Action<int, ApiCall, string, bool> callBack)
+    public void PingServer(Action<bool, string> callBack)
     {
-        return StartRequest(
-            ApiCall.Ping,
-            Method.GET,
-            "ping",
-            null,
-            null,
-            callBack);
+        StartCoroutine(
+            SendRequest(
+                Method.GET,
+                "ping",
+                null,
+                null,
+                (string json, bool callCompleted) =>            
+                {                
+                    if (callCompleted && json.Contains("online"))                       
+                        callBack.Invoke(true, json);
+                    else
+                        callBack.Invoke(false, json);
+                }));        
     }
+ 
 
-    public int GetCurrencyBalance(string key, Action<int, ApiCall, string, bool> callBack)
+    public void GetCurrencyBalance(string key, Action<bool, float> callBack)
     {
-        return StartRequest(
-            ApiCall.GetCurrencyBalance,
+        StartCoroutine(
+           SendRequest(   
             Method.GET,
              $"contracts/currency/balances",
             new Dictionary<string, string> { { "key", key } },
             null,
-            callBack);
+             (string json, bool callCompleted) =>
+             {
+                 if (callCompleted)
+                 {
+                     try
+                     {
+                         CurrencyBalance currencyBalance = JsonUtility.FromJson<CurrencyBalance>(json);
+                         float balance = float.Parse(currencyBalance.value.__fixed__);
+                         callBack.Invoke(callCompleted, balance);
+                     }
+                     catch (Exception ex)
+                     {
+                         Debug.LogError($"GetCurrencyBalance: Failed json string: {json}, ex: {ex.Message}");
+                         callBack.Invoke(false, 0);
+                     }
+                 }
+                 else
+                     callBack.Invoke(callCompleted, 0);
+
+             }));
     }
 
-    public int SendTransaction(string jsonData, Action<int, ApiCall, string, bool> callBack)
+    public void SendTransaction(string jsonData, Action<bool, string> callBack)
     {
-        return StartRequest(
-           ApiCall.SendTransaction,
+        StartCoroutine(
+           SendRequest(
            Method.POST,
            null,
            null,
            jsonData,
-           callBack);
+           (string json, bool callCompleted) =>
+           {
+               callBack.Invoke(callCompleted, json);
+           }));
     }
 
-    public int GetNonce(string sender, Action<int, ApiCall, string, bool> callBack)
-    {        
-        return StartRequest(
-            ApiCall.GetNonce,
+    public void GetNonce(string sender, Action<bool, string> callBack)
+    {
+        StartCoroutine(
+           SendRequest(
             Method.GET,
             "nonce/" + sender,
             null,
             null,
-            callBack);       
+              (string json, bool callCompleted) =>
+              {
+                  callBack.Invoke(callCompleted, json);
+              }));
     }
 
  
 
-    private int StartRequest(ApiCall apiCall, Method method, string path, Dictionary<string, string> parms, string jsonData, Action<int, ApiCall, string, bool> callBack)
-    {
-        int reqID = requestIDCounter++;
-        StartCoroutine(
-            SendRequest(
-            reqID,
-            apiCall,
-            method,
-            path,
-            parms,
-            jsonData,
-            callBack));
-        return reqID;
-    }
 
-    private IEnumerator SendRequest(int requestID, ApiCall apiCall, Method method, string path, Dictionary<string, string> parms, string jsonData, Action<int, ApiCall, string, bool> callBack)
+    private IEnumerator SendRequest(Method method, string path, Dictionary<string, string> parms, string jsonData, Action<string, bool> callBack)
     {
         string uri = host;
 
@@ -149,20 +177,24 @@ public class MasterNodeApi : Network
             }
             
             request.timeout = timeout;
-            Debug.Log($"Sending web request {requestID} to {uri} with method of {method}");
+            Debug.Log($"Sending web request to {uri} with method of {method}");
             yield return request.SendWebRequest();
             if (request.isNetworkError || request.isHttpError)
             {
-                callBack?.Invoke(requestID, apiCall, request.error, FAILED);
+                Debug.LogError($"Recieved ERROR response from {uri} of {request.error}");
+                callBack?.Invoke(request.error, FAILED);               
             }
             else
             {
                 string json = request.downloadHandler.text;
-                callBack?.Invoke(requestID,apiCall, json, SUCCESS);
+                Debug.Log($"Recieved response from {uri} of {json}");
+                callBack?.Invoke(json, SUCCESS);
+               
             }
         }
     }
 
 
 }
+
 

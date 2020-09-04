@@ -66,23 +66,18 @@ namespace Tests
         public IEnumerator PingTest()
         {
             SetupGood();
-            masterNodeApiGood.PingServer((int requestID, MasterNodeApi.ApiCall apiCall, string json, bool callCompleted) => {
+            masterNodeApiGood.PingServer((bool success, string json) => {
                 // Test that ping can reach testnet
-                calledBack = true;
-                Debug.Log($"Request:{requestID} of API {apiCall} {(callCompleted ? "successful" : "failed")}: {json}");
-                Assert.True(callCompleted);
-                Assert.True(apiCall == MasterNodeApi.ApiCall.Ping);
-                Assert.True(json.Contains("{\"status\":\"online\"}"));                
+                calledBack = true;               
+                Assert.True(success);                                       
             });            
             while (!calledBack) { yield return null; }
 
             SetupBad();            
-            masterNodeApiBad.PingServer((int requestID, MasterNodeApi.ApiCall apiCall, string json, bool callCompleted) => {
+            masterNodeApiBad.PingServer((bool success, string json) => {
                 // Test that ping failed
-                calledBack = true;
-                Debug.Log($"Request:{requestID} of API {apiCall} {(callCompleted ? "successful" : "failed")}: {json}");
-                Assert.True(!callCompleted);
-                Assert.True(apiCall == MasterNodeApi.ApiCall.Ping);           
+                calledBack = true;                
+                Assert.True(!success);                
             });
             while (!calledBack) { yield return null; }
         }
@@ -91,12 +86,12 @@ namespace Tests
         public IEnumerator GetCurrencyBalanceTest()
         {
             SetupGood();
-            masterNodeApiGood.GetCurrencyBalance(vk, (int requestID, MasterNodeApi.ApiCall apiCall, string json, bool callCompleted) =>
+            masterNodeApiGood.GetCurrencyBalance(vk, (bool callCompleted, float balance) =>
             {
-                calledBack = true;
-                Debug.Log($"Request:{requestID} of API {apiCall} {(callCompleted ? "successful" : "failed")}: {json}");            
+                Debug.Log($"GetCurrencyBalance results: {balance}");
+                calledBack = true;                     
                 Assert.True(callCompleted);
-                Assert.True(apiCall == MasterNodeApi.ApiCall.GetCurrencyBalance);
+                
             });
             while (!calledBack) { yield return null; }
         }
@@ -105,14 +100,52 @@ namespace Tests
         public IEnumerator GetVariableTest()
         {
             SetupGood();
-            masterNodeApiGood.GetVariable("currency", "balances", vk, (int requestID, MasterNodeApi.ApiCall apiCall, string json, bool callCompleted) =>
+            masterNodeApiGood.GetVariable("currency", "balances", vk, (bool callCompleted, string json) =>
             {
-                calledBack = true;
-                Debug.Log($"Request:{requestID} of API {apiCall} {(callCompleted ? "successful" : "failed")}: {json}");
-                Assert.True(callCompleted);
-                Assert.True(apiCall == MasterNodeApi.ApiCall.GetVariable);
+                Debug.Log($"GetCurrencyBalance results: {json}");
+                calledBack = true;                
+                Assert.True(callCompleted);              
             });
             while (!calledBack) { yield return null; }
-        }       
+        }
+
+        [UnityTest]
+        public IEnumerator GetNonceTest()
+        {
+            SetupGood();
+            masterNodeApiGood.GetNonce(vk, (bool callCompleted, string json) =>
+            {
+                Debug.Log($"GetNonceTest results: {json}");
+                calledBack = true;
+                Assert.True(callCompleted);
+            });
+            while (!calledBack) { yield return null; }
+        }
+
+        [UnityTest]
+        public IEnumerator GetContractMethodsTest()
+        {
+            SetupGood();
+            masterNodeApiGood.GetContractMethods("currency", (bool callCompleted, string json) =>
+            {
+                Debug.Log($"GetContractMethodsTest results: {json}");
+                calledBack = true;
+                Assert.True(callCompleted);
+            });
+            while (!calledBack) { yield return null; }
+        }
+
+        [UnityTest]
+        public IEnumerator GetContractInfoTest()
+        {
+            SetupGood();
+            masterNodeApiGood.GetContractInfo("currency", (bool callCompleted, string json) =>
+            {
+                Debug.Log($"GetContractMethodsTest results: {json}");
+                calledBack = true;
+                Assert.True(callCompleted);
+            });
+            while (!calledBack) { yield return null; }
+        }
     }
 }

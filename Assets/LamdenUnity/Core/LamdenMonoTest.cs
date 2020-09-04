@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,6 +21,8 @@ public class LamdenMonoTest : MonoBehaviour
 
     public Image imagePing;
 
+   
+
     // Start is called before the first frame update
     void Start()
     {        
@@ -33,7 +36,7 @@ public class LamdenMonoTest : MonoBehaviour
 
         masterNodeApi.GetVariable("currency", "balances", vk, callBack);
         masterNodeApi.GetContractMethods("currency", callBack);
-        masterNodeApi.GetCurrencyBalance(vk, callBack);
+       // masterNodeApi.GetCurrencyBalance(vk, callBack);
 
     }
 
@@ -88,24 +91,24 @@ public class LamdenMonoTest : MonoBehaviour
 
     public void Ping()
     {
-        int id2 = masterNodeApi.PingServer(callBack);
+        masterNodeApi.PingServer((bool success, string json) =>
+        {
+            if (success)
+                imagePing.color = Color.green;
+            else
+                imagePing.color = Color.red;
+        });
     }
+
 
     public void GetNonce()
     {
-        int id = masterNodeApi.GetNonce(vk, callBack);
+        masterNodeApi.GetNonce(vk, callBack);
     }
 
-    void callBack(int requestID, MasterNodeApi.ApiCall apiCall, string json, bool callCompleted)
+    void callBack(bool callCompleted, string json)
     {
-        Debug.Log($"Request:{requestID} of API {apiCall.ToString()} {(callCompleted ? "successful": "failed")}: {json}");
-        if(apiCall == MasterNodeApi.ApiCall.Ping)
-        {
-            if (callCompleted && json.Contains("online"))
-                imagePing.color = Color.green;
-            else
-                imagePing.color = Color.red;           
-        }     
+        Debug.Log($"Request: {(callCompleted ? "successful": "failed")}: {json}");       
     }
 
     void LoadWalletTest()
