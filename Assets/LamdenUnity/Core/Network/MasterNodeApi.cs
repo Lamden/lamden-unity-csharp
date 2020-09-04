@@ -18,9 +18,6 @@ public class MasterNodeApi : Network
 
     public string host { get{ return hosts[Random.Range(0, hosts.Length)];}}
 
-    public string url { get { return host; }}
-      
-
     private void Awake()
     {
         SetNetworkInfo(networkInfo);    

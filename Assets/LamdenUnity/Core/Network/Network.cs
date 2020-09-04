@@ -16,7 +16,7 @@ public class Network : MonoBehaviour
     protected string blockExplorer;
     protected bool onliine;
 
-    public int timeout = 10000;    
+    public int timeout = 10000;   
 
     public void SetNetworkInfo(NetworkInfo networkInfo)
     {
