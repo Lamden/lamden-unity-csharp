@@ -4,62 +4,138 @@ using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
+using UnityEngine.Networking;
+using Random = UnityEngine.Random;
 
-public class Network : MonoBehaviour
+namespace LamdenUnity
 {
-    public enum Method { GET, POST };
-
-    protected string type;
-    protected string[] hosts;
-    protected string currencySymbol;
-    protected bool lamden;
-    protected string blockExplorer;
-    protected bool onliine;
-
-    public int timeout = 10000;   
-
-    public void SetNetworkInfo(NetworkInfo networkInfo)
+    public class Network : MonoBehaviour
     {
-        if(networkInfo == null)
-            throw new Exception("networkInfo cannot be null");
+        public const bool SUCCESS = true;
+        public const bool FAILED = false;
 
-        if (networkInfo.hosts == null)
-            throw new Exception("networkInfo.hosts cannot be null");
+        public enum Method { GET, POST };
 
-        type = string.IsNullOrEmpty(networkInfo.networkType)? "custom" : networkInfo.networkType.ToLower();
+        protected string type;
+        protected string[] hosts;
+        protected string currencySymbol;
+        protected bool lamden;
+        protected string blockExplorer;
+        protected bool onliine;
 
-        if (ValidateHosts(networkInfo.hosts))
-            hosts = networkInfo.hosts;
+        public int timeout = 10000;
 
-        currencySymbol = string.IsNullOrEmpty(networkInfo.networkType) ? "TAU" : currencySymbol = networkInfo.networkType.ToLower();
-
-        blockExplorer = string.IsNullOrEmpty(networkInfo.blockExplorer) ? null : networkInfo.blockExplorer;         
-    } 
-    
-    bool ValidateHosts(string[] hosts)
-    {
-        int len = hosts.Length;
-        for (int i = 0; i < len; i++)
+        // The host should be locked during a transaction to ensure the transaction 
+        // is communicated to the same node that provided the nonce
+        private bool hostLocked = false;
+        private int hostLockIndex = 0;
+        public void LockHost(bool setLocked) 
         {
-            if (!ValidateProtocol(hosts[i].ToLower()))
-                throw new Exception("Host String must start with http:// or https://");
-
-            if (!hosts[i].EndsWith("/"))
-                hosts[i] += "/";
+            if (setLocked)
+            {
+                hostLockIndex = Random.Range(0, hosts.Length);
+                hostLocked = true;
+            }
+            else
+                hostLocked = false;
         }
 
-        return true;
-    }
+        public string host { get {
+                if (hostLocked)
+                    return hosts[hostLockIndex];
+                else
+                    return hosts[Random.Range(0, hosts.Length)]; 
+            } }
 
-    bool ValidateProtocol(string host)
-    {
-        if (host.StartsWith("http://") || host.StartsWith("https://"))        
+        public void SetNetworkInfo(NetworkInfo networkInfo)
+        {
+            if (networkInfo == null)
+                throw new Exception("networkInfo cannot be null");
+
+            if (networkInfo.hosts == null)
+                throw new Exception("networkInfo.hosts cannot be null");
+
+            type = string.IsNullOrEmpty(networkInfo.networkType) ? "custom" : networkInfo.networkType.ToLower();
+
+            if (ValidateHosts(networkInfo.hosts))
+                hosts = networkInfo.hosts;
+
+            currencySymbol = string.IsNullOrEmpty(networkInfo.networkType) ? "TAU" : currencySymbol = networkInfo.networkType.ToLower();
+
+            blockExplorer = string.IsNullOrEmpty(networkInfo.blockExplorer) ? null : networkInfo.blockExplorer;
+        }
+
+        bool ValidateHosts(string[] hosts)
+        {
+            int len = hosts.Length;
+            for (int i = 0; i < len; i++)
+            {
+                if (!ValidateProtocol(hosts[i].ToLower()))
+                    throw new Exception("Host String must start with http:// or https://");
+
+                if (!hosts[i].EndsWith("/"))
+                    hosts[i] += "/";
+            }
+
             return true;
-        else
-            return false;       
+        }
+
+        bool ValidateProtocol(string host)
+        {
+            if (host.StartsWith("http://") || host.StartsWith("https://"))
+                return true;
+            else
+                return false;
+        }
+
+        protected IEnumerator SendRequest(Method method, string path, Dictionary<string, string> parms, string jsonData, Action<string, bool> callBack)
+        {
+            string uri = host;
+
+            if (!string.IsNullOrEmpty(path))
+                uri += path;
+
+            if (parms != null)
+            {
+                uri += "?";
+                foreach (var item in parms)
+                {
+                    uri += $"{item.Key}={item.Value}";
+                }
+            }
+
+            using (UnityWebRequest request = new UnityWebRequest(uri, method.ToString()))
+            {
+                DownloadHandlerBuffer dH = new DownloadHandlerBuffer();
+                request.downloadHandler = dH;
+
+                if (method == Method.POST)
+                {
+                    request.SetRequestHeader("Content-Type", "application/json");
+                    byte[] data = System.Text.Encoding.UTF8.GetBytes(jsonData);
+                    UploadHandlerRaw upHandler = new UploadHandlerRaw(data);
+                    upHandler.contentType = "application/json";
+                    request.uploadHandler = upHandler;
+                }
+
+                request.timeout = timeout;
+                Debug.Log($"Sending web request to {uri} with method of {method}");
+                yield return request.SendWebRequest();
+                if (request.isNetworkError || request.isHttpError)
+                {
+                    Debug.LogError($"Recieved ERROR response from {uri} of {request.error}");
+                    callBack?.Invoke(request.error, FAILED);
+                }
+                else
+                {
+                    string json = request.downloadHandler.text;
+                    Debug.Log($"Recieved response from {uri} of {json}");
+                    callBack?.Invoke(json, SUCCESS);
+
+                }
+            }
+        }
     }
-
-
 }
 
 

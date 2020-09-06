@@ -5,71 +5,101 @@ using unity.libsodium;
 using UnityEditor;
 using UnityEngine;
 
-
-public class Wallet
+namespace LamdenUnity
 {
-    private KeyPair keyPair;
-
-    public void New()
+    public class Wallet
     {
-        keyPair = new KeyPair();
-    }
+        private KeyPair keyPair;
 
-    public void Load(string sk)
-    {
-        byte[] skBytes = Helper.StringToByteArray(sk, 64);
-        Debug.Log($"original: {sk}, decoded: {Helper.ByteArrayToHexString(skBytes)}");
-        keyPair = new KeyPair(sk);
-    }
+        public void New()
+        {
+            keyPair = new KeyPair();
+        }
 
-    public string GetSignatureString(byte[] msg)
-    {
-        return Helper.ByteArrayToHexString(GetSignatureBytes(msg)).ToLower();
-    }
+        public void Load(string sk)
+        {
+            byte[] skBytes = Helper.StringToByteArray(sk, 64);
+            Debug.Log($"original: {sk}, decoded: {Helper.ByteArrayToHexString(skBytes)}");
+            keyPair = new KeyPair(sk);
+        }
 
-    public byte[] GetSignatureBytes(byte[] msg)
-    {
-        if (keyPair == null)
-            throw new Exception("Key pair not initialized");
+        public string GetSignatureString(byte[] msg)
+        {
+            return Helper.ByteArrayToHexString(GetSignatureBytes(msg)).ToLower();
+        }
 
-        if (msg == null)
-            throw new Exception("Msg cannot be null");
+        public byte[] GetSignatureBytes(byte[] msg)
+        {
+            if (keyPair == null)
+            {
+                Debug.LogError("Key pair not initialized");
+                return null;
+            }
 
-        byte[] sig = new byte[64];
-        long sigLen = 0;
-        if (NativeLibsodium.crypto_sign_detached(sig, ref sigLen, msg, msg.Length, keyPair.skBytes) == 0)
-            return sig;
-        else
+            if (msg == null)
+            {
+                Debug.LogError("Msg cannot be null");
+                return null;
+            }
+
+            byte[] sig = new byte[64];
+            long sigLen = 0;
+            try
+            {
+                if (NativeLibsodium.crypto_sign_detached(sig, ref sigLen, msg, msg.Length, keyPair.skBytes) == 0)
+                    return sig;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("Error generating signature: " + ex.Message);
+            }
+
             return null;
-    }
+        }
 
-    public bool Verify(byte[] sig, byte[] msg)
-    {
-        if (keyPair == null)
-            throw new Exception("Key pair not initialized");
+        public bool Verify(byte[] sig, byte[] msg)
+        {
+            if (keyPair == null)
+            {
+                Debug.LogError("Key pair not initialized");
+                return false;
+            }
 
-        if (sig == null)
-            throw new Exception("sig cannot be null");
+            if (sig == null)
+            {
+                Debug.LogError("sig cannot be null");
+                return false;
+            }
 
-        if (msg == null)
-            throw new Exception("Msg cannot be null");
+            if (msg == null)
+            {
+                Debug.LogError("Msg cannot be null");
+                return false;
+            }
 
-        return NativeLibsodium.crypto_sign_verify_detached(sig, msg, msg.Length, keyPair.vkBytes) == 0 ? true : false;
-    }
+            return NativeLibsodium.crypto_sign_verify_detached(sig, msg, msg.Length, keyPair.vkBytes) == 0 ? true : false;
+        }
 
-    public string GetVK()
-    {
-        if (keyPair == null)
-            throw new Exception("Key pair not initialized");
+        public string GetVK()
+        {
+            if (keyPair == null)
+            {
+                Debug.LogError("Key pair not initialized");
+                return null;
+            }
 
-        return keyPair.vkString;
-    }
+            return keyPair.vkString;
+        }
 
-    public string GetSK()
-    {
-        if (keyPair == null)
-            throw new Exception("Key pair not initialized");
+        public string GetSK()
+        {
+            if (keyPair == null)
+            {
+                Debug.LogError("Key pair not initialized");
+                return null;
+            }
 
-        return keyPair.skString;
+            return keyPair.skString;
+        }
     }
 }

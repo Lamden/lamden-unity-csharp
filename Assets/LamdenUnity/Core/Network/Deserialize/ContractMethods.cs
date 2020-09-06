@@ -1,26 +1,29 @@
 ﻿using System;
 
-[Serializable]
-public class Argument
+namespace LamdenUnity
 {
-    public string name;
+    [Serializable]
+    public class Argument
+    {
+        public string name;
 
- 
-    public string type;
-}
 
-[Serializable]
-public class Methods
-{ 
-    public string name;
+        public string type;
+    }
 
- 
-    public Argument[] arguments;
-}
+    [Serializable]
+    public class Methods
+    {
+        public string name;
 
-[Serializable]
-public class ContractMethods
-{ 
-    public Methods[] methods;
+
+        public Argument[] arguments;
+    }
+
+    [Serializable]
+    public class ContractMethods
+    {
+        public Methods[] methods;
+    }
 }
 

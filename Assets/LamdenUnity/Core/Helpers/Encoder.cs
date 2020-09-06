@@ -3,7 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Encoder
-{
-    
+namespace LamdenUnity
+{ 
+    public class Encoder
+    {
+
+    }
 }

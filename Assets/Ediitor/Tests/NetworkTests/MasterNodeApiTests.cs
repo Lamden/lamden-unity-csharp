@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using LamdenUnity;
+using System.Text.RegularExpressions;
 
 namespace Tests
 {
@@ -73,11 +75,13 @@ namespace Tests
             });            
             while (!calledBack) { yield return null; }
 
-            SetupBad();            
-            masterNodeApiBad.PingServer((bool success, string json) => {
+            SetupBad();
+            LogAssert.Expect(LogType.Error, new Regex($".*{badHost}.*"));
+            masterNodeApiBad.PingServer((bool success, string json) =>
+            {
                 // Test that ping failed
-                calledBack = true;                
-                Assert.True(!success);                
+                calledBack = true;
+                Assert.True(!success);
             });
             while (!calledBack) { yield return null; }
         }

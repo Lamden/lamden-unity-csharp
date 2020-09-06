@@ -1,13 +1,18 @@
-﻿
-[System.Serializable]
-public class Value
-{
-    public string __fixed__;
-}
+﻿using System;
 
-[System.Serializable]
-public class CurrencyBalance
+namespace LamdenUnity
 {
-    public Value value;
+
+    [Serializable]
+    public class Value
+    {
+        public string __fixed__;
+    }
+
+    [Serializable]
+    public class CurrencyBalance
+    {
+        public Value value;
+    }
 }
 
