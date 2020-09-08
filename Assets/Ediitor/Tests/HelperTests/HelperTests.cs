@@ -11,19 +11,12 @@ namespace Tests
     {
         // A Test behaves as an ordinary method
         [Test]
-        public void HelperTestsSimplePasses()
+        public void TestDateStamp()
         {
-            // Use the Assert class to test conditions
+            int dateStamp = Helper.GetDateStamp();
+            Debug.Log($"Date stamp now (seconds): {dateStamp}.");
         }
 
-        // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
-        // `yield return null;` to skip a frame.
-        [UnityTest]
-        public IEnumerator HelperTestsWithEnumeratorPasses()
-        {
-            // Use the Assert class to test conditions.
-            // Use yield to skip a frame.
-            yield return null;
-        }
+     
     }
 }

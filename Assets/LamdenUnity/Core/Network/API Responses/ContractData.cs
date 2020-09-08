@@ -3,7 +3,7 @@
 namespace LamdenUnity
 {
     [Serializable]
-    class Contract
+    class ContractData : MyJson
     {
         public string name;
         public string code;

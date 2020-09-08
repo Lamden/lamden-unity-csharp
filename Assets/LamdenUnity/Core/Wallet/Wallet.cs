@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using unity.libsodium;
 using UnityEditor;
 using UnityEngine;
@@ -21,6 +22,10 @@ namespace LamdenUnity
             byte[] skBytes = Helper.StringToByteArray(sk, 64);
             Debug.Log($"original: {sk}, decoded: {Helper.ByteArrayToHexString(skBytes)}");
             keyPair = new KeyPair(sk);
+        }
+
+        public string GetSignatureString(string msg) {
+            return GetSignatureString(Encoding.ASCII.GetBytes(msg));
         }
 
         public string GetSignatureString(byte[] msg)

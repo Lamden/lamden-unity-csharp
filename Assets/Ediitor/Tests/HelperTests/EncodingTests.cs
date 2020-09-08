@@ -9,21 +9,36 @@ namespace Tests
 {
     public class EncodingTests
     {
-        // A Test behaves as an ordinary method
+        string dateString = "2020-07-28T19:16:35.059Z";
+        int millisecondsDelta = 475200000;
+
         [Test]
-        public void EncodingTestsSimplePasses()
+        public void EncodeDateTimeTest()
         {
-            // Use the Assert class to test conditions
+            string encoded = new KT_DateTime(dateString).ToString();
+            string provided = "[2020,7,28,19,16,35,59]";
+            Debug.Log($"EncodeDateTimeTest: {encoded}");
+            Assert.AreEqual(encoded, provided);
         }
 
-        // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
-        // `yield return null;` to skip a frame.
-        [UnityTest]
-        public IEnumerator EncodingTestsWithEnumeratorPasses()
+       
+        [Test]
+        public void EncodeTimeDeltaTest()
         {
-            // Use the Assert class to test conditions.
-            // Use yield to skip a frame.
-            yield return null;
+            string encoded = new KT_DeltaTime(millisecondsDelta).ToString();
+            string provided = "[5,43200]";
+            Debug.Log($"EncodeTimeDeltaTest: {encoded}");
+            Assert.AreEqual(encoded, provided);
         }
+
+        [Test]
+        public void FloatTest ()
+        {
+            string encoded = new KT_Float(1.1f).ToString();
+            string provided = "{\"__fixed__\":\"1.1\"}";
+            Debug.Log($"FloatTest: {encoded}");
+            Assert.AreEqual(encoded, provided);
+        }
+
     }
 }

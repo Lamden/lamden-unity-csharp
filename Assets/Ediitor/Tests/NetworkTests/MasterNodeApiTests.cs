@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using LamdenUnity;
 using System.Text.RegularExpressions;
+using static LamdenUnity.ContractMethodsData;
 
 namespace Tests
 {
@@ -98,6 +99,10 @@ namespace Tests
                 
             });
             while (!calledBack) { yield return null; }
+
+            CurrencyBalanceData currencyBalance = new CurrencyBalanceData();
+            currencyBalance.value.__fixed__ = "4.5f";
+            Debug.Log(currencyBalance.ToJsonString());
         }
 
         [UnityTest]

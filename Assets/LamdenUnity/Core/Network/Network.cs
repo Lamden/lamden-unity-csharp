@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using Random = UnityEngine.Random;
@@ -110,12 +111,12 @@ namespace LamdenUnity
                 request.downloadHandler = dH;
 
                 if (method == Method.POST)
-                {
-                    request.SetRequestHeader("Content-Type", "application/json");
-                    byte[] data = System.Text.Encoding.UTF8.GetBytes(jsonData);
-                    UploadHandlerRaw upHandler = new UploadHandlerRaw(data);
-                    upHandler.contentType = "application/json";
+                {                   
+                    byte[] data = Encoding.UTF8.GetBytes(jsonData);
+                    UploadHandlerRaw upHandler = new UploadHandlerRaw(data);                    
                     request.uploadHandler = upHandler;
+                    request.SetRequestHeader("Content-Type", "application/json");
+                    
                 }
 
                 request.timeout = timeout;
@@ -123,19 +124,22 @@ namespace LamdenUnity
                 yield return request.SendWebRequest();
                 if (request.isNetworkError || request.isHttpError)
                 {
-                    Debug.LogError($"Recieved ERROR response from {uri} of {request.error}");
+                    Debug.LogError($"Received ERROR response from {uri} of {request.error}");
                     callBack?.Invoke(request.error, FAILED);
                 }
                 else
                 {
                     string json = request.downloadHandler.text;
-                    Debug.Log($"Recieved response from {uri} of {json}");
+                    Debug.Log($"Received response from {uri} of {json}");
                     callBack?.Invoke(json, SUCCESS);
 
                 }
             }
         }
     }
+
+  
+
 }
 
 

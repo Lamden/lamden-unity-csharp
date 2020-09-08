@@ -5,17 +5,124 @@ using UnityEngine;
 
 namespace LamdenUnity
 {
-    public class TransactionBuilder
-    {
-        void StartTranscation(TxInfo txInfo)
-        {
-            // NOTE: The same host must be used throughout the transaction, specifically the tx needs to be sent to the same
-            // host that the nonce was received from
+    public class Transaction
+    {       
+        private TxData txData;
+        private TxInfo txInfo;
+        private MasterNodeApi masterNodeApi;
+        private Action<bool, TxResponse> onCompleteAction;
 
-            if (txInfo == null) Debug.LogError("txInfo cannot be null");
-            if (Helper.isValidKeyString(txInfo.senderVk)) Debug.LogError("Sender Public Key Required (Type: Hex String");
-            if (!string.IsNullOrEmpty(txInfo.contractName)) Debug.LogError("Contract Name Required (Type: String)");
-            if (!string.IsNullOrEmpty(txInfo.methodName)) Debug.LogError("Method Required (Type: String)");
+        public const string replaceString = "\"toReplace\":\"**ReplaceMe**\"";
+
+        public Transaction(MasterNodeApi node, TxInfo ti, Action<bool, TxResponse> action)
+        {
+            txInfo = ti;
+            masterNodeApi = node;
+            onCompleteAction = action;
+           
+           
+
+            txData = new TxData();            
+            txData.payload.sender = txInfo.sender.GetVK(); ;
+            txData.payload.contract = txInfo.contractName;
+            txData.payload.function = txInfo.methodName;
+            txData.payload.stamps_supplied = txInfo.stampLimit;
+
+            GetNonce();
+
+            //SendTransaction(onCompleteAction);
+        }
+
+        bool isValidaTxInfo()
+        {
+            if (masterNodeApi == null)
+            {
+                TxError("StartTranscation: masterNodeApi cannot be null.");
+                return false;
+            }
+            if (txInfo == null)
+            {
+                TxError("StartTranscation: txInfo cannot be null.");
+                return false;
+            }
+            if (!Helper.isValidKeyString(txInfo.sender.GetVK()))
+            {
+                TxError("StartTranscation: Sender Public Key Required (Type: Hex String).");
+                return false;
+            }
+            if (string.IsNullOrEmpty(txInfo.contractName))
+            {
+                TxError("StartTranscation: Contract Name Required (Type: String).");
+                return false;
+            }
+            if (string.IsNullOrEmpty(txInfo.methodName))
+            {
+                TxError("StartTranscation: Method Required (Type: String).");
+                return false;
+            }
+            if (txInfo.stampLimit < 0)
+            {
+                TxError("StartTranscation: Stamp Limt must be to equal or greater than 0.");
+                return false;
+            }
+            if (txInfo.kwargs == null)
+            {
+                TxError("StartTranscation: kwargs cannot be null");
+                return false;
+            }
+
+            return true;
+        }
+
+        void TxError(string error)
+        {
+            Debug.LogError(error);
+            TxResponse txResponse = new TxResponse();
+            txResponse.error = error;
+            onCompleteAction(false, txResponse);
+        }
+
+        void GetNonce()
+        {
+            masterNodeApi.GetNonce(txInfo.sender.GetVK(),(bool success, string result) => {
+                if (!success)
+                {
+                    TxError("Transaction: Failed to get nonce!");
+                }
+                else
+                {
+                    NonceData nonce = NonceData.FromJson(result);
+                    txData.payload.nonce = nonce.nonce;
+                    txData.payload.processor = nonce.processor;                  
+                    SendTransaction();
+                }
+            });
+        }
+
+        private void SendTransaction()
+        {            
+            string payloadJson = JsonUtility.ToJson(txData.payload);
+            string kwargs = txInfo.getKwargString();
+            payloadJson = payloadJson.Replace(replaceString, kwargs);
+            txData.metadata.signature = txInfo.sender.GetSignatureString(payloadJson);
+            txData.metadata.timestamp = Helper.GetDateStamp();
+            
+            string txDataJson = JsonUtility.ToJson(txData).Replace(replaceString, kwargs);            
+            Debug.Log($"Sending txData Json data: {txDataJson}");
+
+            masterNodeApi.SendTransaction(txDataJson, (bool success, string result) =>
+            {
+                Debug.Log($"SendTransaction result was {success}: {result}");
+
+                TxResponse txResponse = JsonUtility.FromJson<TxResponse>(result);
+
+                if (success)
+                    onCompleteAction(true, txResponse);
+                else
+                    onCompleteAction(false, txResponse);
+
+                });
+            
         }
 
         void MakePayLoad()
@@ -126,25 +233,7 @@ namespace LamdenUnity
             **/
         }
 
-        void GetNonce(Action callback)
-        {
-            /**
-                let timestamp = new Date().toUTCString();
-                this.nonceResult = await this.API.getNonce(this.sender)
-                if (typeof this.nonceResult.nonce === 'undefined'){
-                    throw new Error(`Unable to get nonce for ${ this.sender}
-                    on network ${ this.url}`)
-                }
-                this.nonceResult.timestamp = timestamp;
-                this.nonce = this.nonceResult.nonce;
-                this.processor = this.nonceResult.processor;
-                //Create payload object
-                this.makePayload()
-
-                if (!callback) return this.nonceResult;
-                return callback(this.nonceResult)
-            **/
-        }
+      
 
         void send(string sk, Action callback)
         {

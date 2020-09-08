@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using static LamdenUnity.ContractMethodsData;
 using Random = UnityEngine.Random;
 
 namespace LamdenUnity
@@ -31,7 +32,7 @@ namespace LamdenUnity
                 null,
                  (string json, bool callCompleted) =>
                  {
-                     callBack.Invoke(callCompleted, json);
+                     callBack?.Invoke(callCompleted, json);
                  }));
         }
 
@@ -45,7 +46,7 @@ namespace LamdenUnity
                 null,
                  (string json, bool callCompleted) =>
                  {
-                     callBack.Invoke(callCompleted, json);
+                     callBack?.Invoke(callCompleted, json);
                  }));
 
         }
@@ -64,22 +65,25 @@ namespace LamdenUnity
                      {
                          try
                          {
-                             ContractMethods methods = JsonUtility.FromJson<ContractMethods>(json);
+                             ContractMethodsData methods = JsonUtility.FromJson<ContractMethodsData>(json);
                              Dictionary<string, Methods> methodDic = new Dictionary<string, Methods>();
                              for (int i = 0; i < methods.methods.Length; i++)
                              {
                                  methodDic.Add(methods.methods[i].name, methods.methods[i]);
                              }
-                             callBack.Invoke(callCompleted, methodDic);
+                             callBack?.Invoke(callCompleted, methodDic);
                          }
                          catch (Exception ex)
                          {
                              Debug.LogError($"GetCurrencyBalance: Failed json string: {json}, ex: {ex.Message}");
-                             callBack.Invoke(false, null);
+                             callBack?.Invoke(false, null);
                          }
                      }
                      else
-                         callBack.Invoke(callCompleted, null);
+                     {
+                         callBack?.Invoke(callCompleted, null);
+                         Debug.LogError($"GetCurrencyBalance: Failed: {json}");
+                     }
                  }));
         }
 
@@ -115,9 +119,7 @@ namespace LamdenUnity
                      {
                          try
                          {
-                             CurrencyBalance currencyBalance = JsonUtility.FromJson<CurrencyBalance>(json);
-                             float balance = float.Parse(currencyBalance.value.__fixed__);
-                             callBack.Invoke(callCompleted, balance);
+                             callBack.Invoke(callCompleted, CurrencyBalanceData.GetValue(json));
                          }
                          catch (Exception ex)
                          {
