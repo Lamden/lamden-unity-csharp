@@ -98,9 +98,9 @@ namespace LamdenUnity
                     (string json, bool callCompleted) =>
                     {
                         if (callCompleted && json.Contains("online"))
-                            callBack.Invoke(true, json);
+                            callBack?.Invoke(true, json);
                         else
-                            callBack.Invoke(false, json);
+                            callBack?.Invoke(false, json);
                     }));
         }
 
@@ -119,16 +119,19 @@ namespace LamdenUnity
                      {
                          try
                          {
-                             callBack.Invoke(callCompleted, CurrencyBalanceData.GetValue(json));
+                             if (json.Contains("_fixed_"))
+                                 callBack?.Invoke(true, CurrencyBalanceFloatData.GetValue(json));
+                             else
+                                 callBack?.Invoke(true, CurrencyBalanceIntData.GetValue(json));
                          }
                          catch (Exception ex)
                          {
                              Debug.LogError($"GetCurrencyBalance: Failed json string: {json}, ex: {ex.Message}");
-                             callBack.Invoke(false, 0);
+                             callBack?.Invoke(false, -1);
                          }
                      }
                      else
-                         callBack.Invoke(callCompleted, 0);
+                         callBack?.Invoke(false, -1); ;
 
                  }));
         }
@@ -143,7 +146,7 @@ namespace LamdenUnity
                jsonData,
                (string json, bool callCompleted) =>
                {
-                   callBack.Invoke(callCompleted, json);
+                   callBack?.Invoke(callCompleted, json);
                }));
         }
 
@@ -157,16 +160,25 @@ namespace LamdenUnity
                 null,
                   (string json, bool callCompleted) =>
                   {
-                      callBack.Invoke(callCompleted, json);
+                      callBack?.Invoke(callCompleted, json);
                   }));
         }
 
-
-
-
-       
-
-
+        public void CheckTransaction(string hash, Action<bool, string> callBack)
+        {
+            StartCoroutine(
+              SendRequest(
+               Method.GET,
+               "tx",
+               new Dictionary<string, string> {
+                    { "hash", hash }
+               },
+               null,
+                 (string json, bool callCompleted) =>
+                 {
+                     callBack?.Invoke(callCompleted, json);
+                 }));
+        }
     }
 }
 

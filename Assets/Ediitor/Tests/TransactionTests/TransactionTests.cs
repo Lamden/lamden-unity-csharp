@@ -4,6 +4,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using LamdenUnity;
+using System;
 
 namespace Tests
 {
@@ -15,9 +16,6 @@ namespace Tests
 
         MasterNodeApi masterNodeApiGood;
         const string goodHost = "http://167.172.126.5:18080/";
-
-
-
 
         NetworkInfo goodNetwork = new NetworkInfo()
         {
@@ -61,11 +59,61 @@ namespace Tests
                 }
             };
 
-            Transaction tx = new Transaction(masterNodeApiGood, txInfo, (bool result, TxResponse txResponse) => {
-                Assert.IsTrue(result);
-                Assert.IsTrue(txResponse.success.Equals("Transaction successfully submitted to the network."));
-                Assert.IsTrue(!txResponse.hash.Equals(""));
-                calledBack = true;
+            Transaction tx = new Transaction(masterNodeApiGood, txInfo, (Transaction.TransactionStatus txStatus, TxResponse txResponse) => {
+                if (txStatus == Transaction.TransactionStatus.SubmittedProcessing)                
+                    Assert.IsTrue(txResponse.success.Equals("Transaction successfully submitted to the network."));
+                
+                if(txStatus == Transaction.TransactionStatus.Completed)
+                    Assert.AreEqual(txResponse.transactionData.status, 0);
+
+                if(txStatus == Transaction.TransactionStatus.Completed || txStatus == Transaction.TransactionStatus.Error)
+                    calledBack = true; 
+            });
+
+            // Use the Assert class to test conditions.
+            // Use yield to skip a frame.
+            yield return null;
+            while (!calledBack) { yield return null; }
+        }
+
+        [UnityTest]
+        public IEnumerator TestKwargs()
+        {
+            SetupGood();
+            Wallet wallet = new Wallet();
+            wallet.Load("c8a3c5333aa3b058c4fa16d48db52355ab62ddc8daa9a183706a912e522440b6");
+
+
+            TxInfo txInfo = new TxInfo()
+            {
+                sender = wallet,
+                contractName = "con_values_testing",
+                methodName = "test_values",
+                stampLimit = 100,
+                kwargs = new Dictionary<string, KwargType>
+                {
+                    {"UID", new KT_UID("testing2")},
+                    {"Str", new KT_String("this is another string")},
+                    {"Float", new KT_Float(1.0f)},
+                    {"Int", new KT_Int(2)},
+                    {"Bool", new KT_Bool(false)},
+                    {"Dict", new KT_Dict(new Dictionary<string, KwargType>{ {"test", new KT_String("my test")}})},
+                    {"List", new KT_List(new List<KwargType>{ new KT_Float(1.2f), new KT_String("test2")})},
+                    {"ANY", new KT_String("could be any type you want")},
+                    {"DateTime", new KT_DateTime(DateTime.Now)},
+                    {"TimeDelta", new KT_TimeDelta(4898)}
+                }
+            };
+
+            Transaction tx = new Transaction(masterNodeApiGood, txInfo, (Transaction.TransactionStatus txStatus, TxResponse txResponse) => {
+                if (txStatus == Transaction.TransactionStatus.SubmittedProcessing)
+                    Assert.IsTrue(txResponse.success.Equals("Transaction successfully submitted to the network."));
+
+                if (txStatus == Transaction.TransactionStatus.Completed)
+                    Assert.AreEqual(txResponse.transactionData.status, 0);
+
+                if (txStatus == Transaction.TransactionStatus.Completed || txStatus == Transaction.TransactionStatus.Error)
+                    calledBack = true;
             });
 
             // Use the Assert class to test conditions.

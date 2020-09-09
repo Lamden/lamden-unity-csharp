@@ -8,11 +8,11 @@ using UnityEngine;
 namespace LamdenUnity
 {
     [Serializable]
-    public class KT_DeltaTime : KwargType
+    public class KT_TimeDelta : KwargType
     {        
         public int[] deltaTime;
 
-        public KT_DeltaTime(long dateStamp)
+        public KT_TimeDelta(long dateStamp)
         {
             kwargType = KwargTypes.DeltaTime;
             int days = (int)(dateStamp / 1000 / 60 / 60 / 24);

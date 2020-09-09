@@ -30,6 +30,5 @@ namespace LamdenUnity
         {
             Debug.LogError($"Error encoding {value} to {type}");
         }
-
     }
 }

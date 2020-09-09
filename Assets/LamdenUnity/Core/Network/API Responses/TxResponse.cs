@@ -12,5 +12,6 @@ namespace LamdenUnity
         public string success ="";
         public string hash = "";
         public string error = "";
+        public CheckTransactionData transactionData;
     }
 }

@@ -120,17 +120,17 @@ namespace LamdenUnity
                 }
 
                 request.timeout = timeout;
-                Debug.Log($"Sending web request to {uri} with method of {method}");
+                Debug.Log($"{Time.realtimeSinceStartup}: Sending web request to {uri} with method of {method}");
                 yield return request.SendWebRequest();
                 if (request.isNetworkError || request.isHttpError)
                 {
-                    Debug.LogError($"Received ERROR response from {uri} of {request.error}");
+                    Debug.LogWarning($"Received ERROR response from {uri} of {request.error}");
                     callBack?.Invoke(request.error, FAILED);
                 }
                 else
                 {
                     string json = request.downloadHandler.text;
-                    Debug.Log($"Received response from {uri} of {json}");
+                    Debug.Log($"{Time.realtimeSinceStartup} - Received response from {uri} of {json}");
                     callBack?.Invoke(json, SUCCESS);
 
                 }

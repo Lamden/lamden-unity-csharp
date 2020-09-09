@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace LamdenUnity
 {
     [Serializable]
-    class TxData
+    public class TxData
     {
         public Metadata metadata = new Metadata();
         public Payload payload = new Payload();

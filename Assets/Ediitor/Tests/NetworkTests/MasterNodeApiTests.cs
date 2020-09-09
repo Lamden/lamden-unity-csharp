@@ -7,12 +7,13 @@ using UnityEngine.TestTools;
 using LamdenUnity;
 using System.Text.RegularExpressions;
 using static LamdenUnity.ContractMethodsData;
+using SimpleJSON;
 
 namespace Tests
 {
     public class MasterNodeApiTests
     {
-        string vk = "d41b8ed0d747ca6dfacdc58b78e1dba86cd9616359014eebd5f3443509111120";
+        string vk = "960c002a36c30c3aec8bc670e9b8b40eebcfd545f4e9237579fd7395a21ccebb";
         bool calledBack;
 
         MasterNodeApi masterNodeApiGood;
@@ -77,7 +78,7 @@ namespace Tests
             while (!calledBack) { yield return null; }
 
             SetupBad();
-            LogAssert.Expect(LogType.Error, new Regex($".*{badHost}.*"));
+            LogAssert.Expect(LogType.Warning, new Regex($".*{badHost}.*"));
             masterNodeApiBad.PingServer((bool success, string json) =>
             {
                 // Test that ping failed
@@ -93,16 +94,13 @@ namespace Tests
             SetupGood();
             masterNodeApiGood.GetCurrencyBalance(vk, (bool callCompleted, float balance) =>
             {
+                // TODO: Need to handle integeter balances
                 Debug.Log($"GetCurrencyBalance results: {balance}");
                 calledBack = true;                     
                 Assert.True(callCompleted);
-                
+                Assert.True(balance >= 0);                
             });
             while (!calledBack) { yield return null; }
-
-            CurrencyBalanceData currencyBalance = new CurrencyBalanceData();
-            currencyBalance.value.__fixed__ = "4.5f";
-            Debug.Log(currencyBalance.ToJsonString());
         }
 
         [UnityTest]
@@ -158,6 +156,22 @@ namespace Tests
             {
                 Debug.Log($"GetContractMethodsTest results: {json}");
                 calledBack = true;
+                Assert.True(callCompleted);
+            });
+            while (!calledBack) { yield return null; }
+        }
+
+        [UnityTest]
+        public IEnumerator CheckTransactionTest()
+        {
+            SetupGood();
+            masterNodeApiGood.CheckTransaction("3d2b98180bb429a7ca2e5fd81f0cc5cf30a4af6bf4f83eca90685472769703b7", (bool callCompleted, string json) =>
+            {
+                Debug.Log($"CheckTransactionTest results: {json}");
+                CheckTransactionData transactionData = JsonUtility.FromJson<CheckTransactionData>(json);
+                calledBack = true;
+                var n = JSON.Parse(json);
+                Assert.AreEqual(transactionData.status, 0);
                 Assert.True(callCompleted);
             });
             while (!calledBack) { yield return null; }

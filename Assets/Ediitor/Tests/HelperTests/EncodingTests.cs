@@ -25,7 +25,7 @@ namespace Tests
         [Test]
         public void EncodeTimeDeltaTest()
         {
-            string encoded = new KT_DeltaTime(millisecondsDelta).ToString();
+            string encoded = new KT_TimeDelta(millisecondsDelta).ToString();
             string provided = "[5,43200]";
             Debug.Log($"EncodeTimeDeltaTest: {encoded}");
             Assert.AreEqual(encoded, provided);
@@ -40,5 +40,30 @@ namespace Tests
             Assert.AreEqual(encoded, provided);
         }
 
+        [Test]
+        public void DictTest()
+        {
+            Dictionary<string, KwargType> dict = new Dictionary<string, KwargType>();
+            dict.Add("btest", new KT_Bool(false));
+            dict.Add("atest", new KT_Int(1));
+            string encoded = new KT_Dict(dict).ToString();
+            string provided = "{\"atest\":1,\"btest\":false}";
+            Debug.Log($"DictTest: {encoded}");
+            Assert.AreEqual(encoded, provided);
+        }
+
+        [Test]
+        public void ListTest()
+        {
+            List<KwargType> list = new List<KwargType>();
+            list.Add(new KT_Bool(false));
+            list.Add( new KT_Int(1));
+            string encoded = new KT_List(list).ToString();
+            string provided = "[false,1]";
+            Debug.Log($"ListTest: {encoded}");
+            Assert.AreEqual(encoded, provided);
+        }
+
+       
     }
 }
