@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimpleJSON;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,8 +20,7 @@ namespace LamdenUnity
         [Serializable]
         public class State
         {
-            public string key;
-            public object value;
+            public string stateJson;
         }
 
         [Serializable]
@@ -30,31 +30,6 @@ namespace LamdenUnity
             public int timestamp;
         }
         
-        //[Serializable]
-        //public class Kwargs
-        //{
-        //    public int amount;
-        //    public string to;
-        //}
-
-        //[Serializable]
-        //public class Payload
-        //{
-        //    public string contract;
-        //    public string function;
-        //    public Kwargs kwargs;
-        //    public int nonce;
-        //    public string processor;
-        //    public string sender;
-        //    public int stamps_supplied;
-        //}
-
-        //[Serializable]
-        //public class Transaction
-        //{
-        //    public Metadata metadata;
-        //    public Payload payload;
-        //}
-
+        
     }
 }

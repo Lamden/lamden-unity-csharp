@@ -89,9 +89,11 @@ namespace LamdenUnity
                 return false;
         }
 
-        protected IEnumerator SendRequest(Method method, string path, Dictionary<string, string> parms, string jsonData, Action<string, bool> callBack)
+
+        protected IEnumerator SendRequest(string uri, Method method, string path, Dictionary<string, string> parms, string jsonData, Action<string, bool> callBack)
         {
-            string uri = host;
+            if (string.IsNullOrEmpty(uri))
+                uri = host;
 
             if (!string.IsNullOrEmpty(path))
                 uri += path;
@@ -115,8 +117,7 @@ namespace LamdenUnity
                     byte[] data = Encoding.UTF8.GetBytes(jsonData);
                     UploadHandlerRaw upHandler = new UploadHandlerRaw(data);                    
                     request.uploadHandler = upHandler;
-                    request.SetRequestHeader("Content-Type", "application/json");
-                    
+                    request.SetRequestHeader("Content-Type", "application/json");                    
                 }
 
                 request.timeout = timeout;

@@ -94,12 +94,12 @@ namespace Tests
                 {
                     {"UID", new KT_UID("testing2")},
                     {"Str", new KT_String("this is another string")},
-                    {"Float", new KT_Float(1.0f)},
+                    {"Float", new KT_Numerical(1.0f)},
                     {"Int", new KT_Int(2)},
                     {"Bool", new KT_Bool(false)},
                     {"Dict", new KT_Dict(new Dictionary<string, KwargType>{ {"test", new KT_String("my test")}})},
-                    {"List", new KT_List(new List<KwargType>{ new KT_Float(1.2f), new KT_String("test2")})},
-                    {"ANY", new KT_String("could be any type you want")},
+                    {"List", new KT_List(new List<KwargType>{ new KT_Numerical(1.2f), new KT_String("test2")})},
+                    {"ANY", new KT_Numerical(1.1f) },
                     {"DateTime", new KT_DateTime(DateTime.Now)},
                     {"TimeDelta", new KT_TimeDelta(4898)}
                 }

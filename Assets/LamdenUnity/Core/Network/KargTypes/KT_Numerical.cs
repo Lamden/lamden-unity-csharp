@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace LamdenUnity
 {
-    public class KT_Float :KwargType
+    public class KT_Numerical :KwargType
     {
         private float value;
-        public KT_Float(float f)
+        public KT_Numerical(float f)
         {
             kwargType = KwargTypes.Float;
             value = f;

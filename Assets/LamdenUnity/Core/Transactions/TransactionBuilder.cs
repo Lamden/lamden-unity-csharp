@@ -13,6 +13,7 @@ namespace LamdenUnity
         private TxInfo txInfo;
         private MasterNodeApi masterNodeApi;
         private Action<TransactionStatus, TxResponse> onCompleteAction;
+        private string txUri;
 
         public const string replaceString = "\"toReplace\":\"**ReplaceMe**\"";
 
@@ -33,7 +34,6 @@ namespace LamdenUnity
             txData.payload.stamps_supplied = txInfo.stampLimit;
 
             GetNonce();
-
         }
 
         bool isValidaTxInfo()
@@ -87,13 +87,15 @@ namespace LamdenUnity
 
         void GetNonce()
         {
-            masterNodeApi.GetNonce(txInfo.sender.GetVK(),(bool success, string result) => {
+            // TODO: Add callback to include URL
+            masterNodeApi.GetNonce(txInfo.sender.GetVK(),(bool success, string result, string uri) => {
                 if (!success)
                 {
                     TxError($"Transaction: Failed to get nonce: {result}");
                 }
                 else
                 {
+                    txUri = uri;
                     NonceData nonce = NonceData.FromJson(result);
                     txData.payload.nonce = nonce.nonce;
                     txData.payload.processor = nonce.processor;                  
@@ -113,7 +115,7 @@ namespace LamdenUnity
             string txDataJson = JsonUtility.ToJson(txData).Replace(replaceString, kwargs);            
             Debug.Log($"Sending txData Json data: {txDataJson}");
 
-            masterNodeApi.SendTransaction(txDataJson, (bool success, string result) =>
+            masterNodeApi.SendTransaction(txUri, txDataJson, (bool success, string result) =>
             {
                 Debug.Log($"SendTransaction result was {success}: {result}");
 
@@ -126,14 +128,13 @@ namespace LamdenUnity
                 }
                 else
                     onCompleteAction(TransactionStatus.Error, txResponse);
-
                 });            
         }
 
         private void CheckStatus(TxResponse txResponse)
         {            
-            Thread.Sleep(250);            
-            masterNodeApi.CheckTransaction(txResponse.hash, (bool success, string json) => { 
+            Thread.Sleep(500);            
+            masterNodeApi.CheckTransaction(txUri, txResponse.hash, (bool success, string json) => { 
                 if(success)
                 {
                     CheckTransactionData checkTransactionData = JsonUtility.FromJson<CheckTransactionData>(json);
@@ -152,9 +153,7 @@ namespace LamdenUnity
                     TxError("Failed to check status of the transaction.");
 
             });
-        }
-
-    
+        }  
 
     }
 }

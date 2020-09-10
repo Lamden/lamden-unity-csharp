@@ -20,12 +20,6 @@ namespace LamdenUnity
         }
 
         [Serializable]
-        public class Kwargs
-        {           
-            public string toReplace = "**ReplaceMe**";
-        }
-
-        [Serializable]
         public class Payload
         {
             public string contract;
@@ -35,6 +29,12 @@ namespace LamdenUnity
             public string processor;
             public string sender;
             public int stamps_supplied;
+        }
+
+        [Serializable]
+        public class Kwargs
+        {
+            public string toReplace = "**ReplaceMe**";
         }
 
     }

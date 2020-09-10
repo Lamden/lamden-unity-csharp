@@ -1901,7 +1901,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 607509281}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.25004846
+  m_Size: 0.2632519
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4762,8 +4762,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2416007758763373163, guid: 6ad5094b5e0e9454c8df3c66be2bcf0c,
         type: 3}
+      propertyPath: networkInfo.hosts.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2416007758763373163, guid: 6ad5094b5e0e9454c8df3c66be2bcf0c,
+        type: 3}
       propertyPath: networkInfo.lamden
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2416007758763373163, guid: 6ad5094b5e0e9454c8df3c66be2bcf0c,
+        type: 3}
+      propertyPath: networkInfo.hosts.Array.data[1]
+      value: http://167.172.126.5:18080/
       objectReference: {fileID: 0}
     - target: {fileID: 2416007758763373162, guid: 6ad5094b5e0e9454c8df3c66be2bcf0c,
         type: 3}

@@ -13,7 +13,7 @@ namespace Tests
 {
     public class MasterNodeApiTests
     {
-        string vk = "960c002a36c30c3aec8bc670e9b8b40eebcfd545f4e9237579fd7395a21ccebb";
+        string vk = "4680c6ea89ffc29b0b670a5712edef2b62bc0cf40bfba2f20bbba759cdd185b9";
         bool calledBack;
 
         MasterNodeApi masterNodeApiGood;
@@ -120,7 +120,7 @@ namespace Tests
         public IEnumerator GetNonceTest()
         {
             SetupGood();
-            masterNodeApiGood.GetNonce(vk, (bool callCompleted, string json) =>
+            masterNodeApiGood.GetNonce(vk, (bool callCompleted, string json, string uri) =>
             {
                 Debug.Log($"GetNonceTest results: {json}");
                 calledBack = true;
@@ -165,7 +165,7 @@ namespace Tests
         public IEnumerator CheckTransactionTest()
         {
             SetupGood();
-            masterNodeApiGood.CheckTransaction("3d2b98180bb429a7ca2e5fd81f0cc5cf30a4af6bf4f83eca90685472769703b7", (bool callCompleted, string json) =>
+            masterNodeApiGood.CheckTransaction(null, "3d2b98180bb429a7ca2e5fd81f0cc5cf30a4af6bf4f83eca90685472769703b7", (bool callCompleted, string json) =>
             {
                 Debug.Log($"CheckTransactionTest results: {json}");
                 CheckTransactionData transactionData = JsonUtility.FromJson<CheckTransactionData>(json);

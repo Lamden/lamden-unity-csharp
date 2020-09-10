@@ -35,7 +35,7 @@ public class LamdenMonoTest : MonoBehaviour
         //NewWalletTest();
 
 
-        masterNodeApi.GetVariable("currency", "balances", vk, callBack);
+        //masterNodeApi.GetVariable("currency", "balances", vk, callBack);
         //masterNodeApi.GetContractMethods("currency", callBack);
        // masterNodeApi.GetCurrencyBalance(vk, callBack);
 
@@ -64,11 +64,6 @@ public class LamdenMonoTest : MonoBehaviour
         UpdeateSKandVK();
     }
 
-    public void ClickContractInfo()
-    {
-
-        masterNodeApi.GetContractInfo(inputContractName.text, callBack);
-    }
 
     public void ClickVariableInfo()
     {
@@ -128,7 +123,7 @@ public class LamdenMonoTest : MonoBehaviour
         masterNodeApi.GetNonce(vk, callBack);
     }
 
-    void callBack(bool callCompleted, string json)
+    void callBack(bool callCompleted, string json, string uri)
     {
         Debug.Log($"Request: {(callCompleted ? "successful": "failed")}: {json}");       
     }
@@ -171,28 +166,7 @@ public class LamdenMonoTest : MonoBehaviour
         }
     }
 
-    //var x = NativeLibsodium.sodium_init();
-    //Debug.Log("NativeLibsodium.sodium_init(): " + x);
-
-    //byte[] vKey = new byte[32];
-    //byte[] sKey = new byte[64];
-
-    //NativeLibsodium.crypto_sign_keypair(vKey, sKey);        
-
-    //Debug.Log("vk (public key):" + BitConverter.ToString(vKey).Replace("-", ""));
-    //Debug.Log("sk (private key):" + BitConverter.ToString(sKey).Replace("-", ""));
-
-    //byte[] sig = new byte[64];
-    //long sigLen = 0;
-
-    //int signRes = NativeLibsodium.crypto_sign_detached(sig, ref sigLen, msgBytes, msgLen, sKey);
-    //Debug.Log("sign result: " + signRes);
-    //string sigString = BitConverter.ToString(sig).Replace("-", "");
-    //Debug.Log("sig: " + sigString);
-    //Debug.Log("sigLen: " + sigString.Length);
-
-    //int verRes = NativeLibsodium.crypto_sign_verify_detached(sig, msgBytes, msgLen, vKey);
-    //Debug.Log("verify result: " + verRes);
+   
 
 
 }

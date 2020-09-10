@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace LamdenUnity
 {
+    // TODO: Remove as KT_Numerical has replaced all number types
     public class KT_Int :KwargType
     {
         private int value;

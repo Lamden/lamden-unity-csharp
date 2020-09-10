@@ -34,7 +34,7 @@ namespace Tests
         [Test]
         public void FloatTest ()
         {
-            string encoded = new KT_Float(1.1f).ToString();
+            string encoded = new KT_Numerical(1.1f).ToString();
             string provided = "{\"__fixed__\":\"1.1\"}";
             Debug.Log($"FloatTest: {encoded}");
             Assert.AreEqual(encoded, provided);

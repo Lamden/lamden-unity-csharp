@@ -10,12 +10,9 @@ namespace LamdenUnity
 {
     public class MasterNodeApi : Network
     {
-        int requestIDCounter = 0;
-
         public enum ApiCall { GetNonce, Ping, GetContractInfo, GetVariable, GetContractMethods, GetCurrencyBalance, SendTransaction };
 
-        public NetworkInfo networkInfo;        
-
+        public NetworkInfo networkInfo;    
 
         private void Awake()
         {
@@ -26,35 +23,37 @@ namespace LamdenUnity
         {
             StartCoroutine(
                SendRequest(
-               Method.GET,
-                "contracts/" + contractName,
-                null,
-                null,
-                 (string json, bool callCompleted) =>
-                 {
-                     callBack?.Invoke(callCompleted, json);
-                 }));
+                   null,
+                   Method.GET,
+                    "contracts/" + contractName,
+                    null,
+                    null,
+                     (string json, bool callCompleted) =>
+                     {
+                         callBack?.Invoke(callCompleted, json);
+                     }));
         }
 
         public void GetVariable(string contractName, string variable, string key, Action<bool, string> callBack)
         {
             StartCoroutine(
                SendRequest(
-                Method.GET,
-                 $"contracts/{contractName}/{variable}",
-                new Dictionary<string, string> { { "key", key } },
-                null,
-                 (string json, bool callCompleted) =>
-                 {
-                     callBack?.Invoke(callCompleted, json);
-                 }));
-
+                   null,
+                    Method.GET,
+                     $"contracts/{contractName}/{variable}",
+                    new Dictionary<string, string> { { "key", key } },
+                    null,
+                     (string json, bool callCompleted) =>
+                     {
+                         callBack?.Invoke(callCompleted, json);
+                     }));
         }
 
         public void GetContractMethods(string contractName, Action<bool, Dictionary<string, Methods>> callBack)
         {
             StartCoroutine(
                SendRequest(
+                   null,
                 Method.GET,
                 $"contracts/{contractName}/methods",
                 null,
@@ -89,8 +88,14 @@ namespace LamdenUnity
 
         public void PingServer(Action<bool, string> callBack)
         {
+            PingServer(null, callBack);
+        }
+
+        public void PingServer(string uri, Action<bool, string> callBack)
+        {
             StartCoroutine(
                 SendRequest(
+                    uri,
                     Method.GET,
                     "ping",
                     null,
@@ -104,80 +109,84 @@ namespace LamdenUnity
                     }));
         }
 
-
         public void GetCurrencyBalance(string key, Action<bool, float> callBack)
         {
             StartCoroutine(
                SendRequest(
-                Method.GET,
-                 $"contracts/currency/balances",
-                new Dictionary<string, string> { { "key", key } },
-                null,
-                 (string json, bool callCompleted) =>
-                 {
-                     if (callCompleted)
+                   null,
+                    Method.GET,
+                     $"contracts/currency/balances",
+                    new Dictionary<string, string> { { "key", key } },
+                    null,
+                     (string json, bool callCompleted) =>
                      {
-                         try
+                         if (callCompleted)
                          {
-                             if (json.Contains("_fixed_"))
-                                 callBack?.Invoke(true, CurrencyBalanceFloatData.GetValue(json));
-                             else
-                                 callBack?.Invoke(true, CurrencyBalanceIntData.GetValue(json));
+                             try
+                             {
+                                 if (json.Contains("_fixed_"))
+                                     callBack?.Invoke(true, CurrencyBalanceFloatData.GetValue(json));
+                                 else
+                                     callBack?.Invoke(true, CurrencyBalanceIntData.GetValue(json));
+                             }
+                             catch (Exception ex)
+                             {
+                                 Debug.LogError($"GetCurrencyBalance: Failed json string: {json}, ex: {ex.Message}");
+                                 callBack?.Invoke(false, -1);
+                             }
                          }
-                         catch (Exception ex)
-                         {
-                             Debug.LogError($"GetCurrencyBalance: Failed json string: {json}, ex: {ex.Message}");
-                             callBack?.Invoke(false, -1);
-                         }
-                     }
-                     else
-                         callBack?.Invoke(false, -1); ;
+                         else
+                             callBack?.Invoke(false, -1); ;
 
-                 }));
+                     }));
         }
 
-        public void SendTransaction(string jsonData, Action<bool, string> callBack)
+        public void SendTransaction(string uri, string jsonData, Action<bool, string> callBack)
         {
             StartCoroutine(
                SendRequest(
-               Method.POST,
-               null,
-               null,
-               jsonData,
-               (string json, bool callCompleted) =>
-               {
-                   callBack?.Invoke(callCompleted, json);
-               }));
+                   uri,
+                   Method.POST,
+                   null,
+                   null,
+                   jsonData,
+                   (string json, bool callCompleted) =>
+                   {
+                       callBack?.Invoke(callCompleted, json);
+                   }));
         }
 
-        public void GetNonce(string sender, Action<bool, string> callBack)
+        public void GetNonce(string sender, Action<bool, string, string> callBack)
         {
+            string uri = host;
             StartCoroutine(
                SendRequest(
+                   uri,
                 Method.GET,
                 "nonce/" + sender,
                 null,
                 null,
                   (string json, bool callCompleted) =>
                   {
-                      callBack?.Invoke(callCompleted, json);
+                      callBack?.Invoke(callCompleted, json, uri);
                   }));
         }
 
-        public void CheckTransaction(string hash, Action<bool, string> callBack)
+        public void CheckTransaction(string uri, string hash, Action<bool, string> callBack)
         {
             StartCoroutine(
               SendRequest(
-               Method.GET,
-               "tx",
-               new Dictionary<string, string> {
-                    { "hash", hash }
-               },
-               null,
-                 (string json, bool callCompleted) =>
-                 {
-                     callBack?.Invoke(callCompleted, json);
-                 }));
+                  uri,
+                   Method.GET,
+                   "tx",
+                   new Dictionary<string, string> {
+                        { "hash", hash }
+                   },
+                   null,
+                     (string json, bool callCompleted) =>
+                     {
+                         callBack?.Invoke(callCompleted, json);
+                     }));
         }
     }
 }
