@@ -12,7 +12,7 @@ namespace LamdenUnity
         public const int SEED_LEN = 32;
 
         public byte[] skBytes { get; }
-        public string skString { get; }
+        public string skString { get { return Helper.ByteArrayToHexString(skBytes).Substring(0, 64).ToLower(); } }
 
         public byte[] vkBytes { get; }
         public string vkString { get; }
@@ -22,8 +22,7 @@ namespace LamdenUnity
             skBytes = new byte[SKEY_LEN];
             vkBytes = new byte[VKEY_LEN];
             NativeLibsodium.crypto_sign_keypair(vkBytes, skBytes);
-            Debug.Log($"sk: {Helper.ByteArrayToHexString(skBytes)}, vk: {Helper.ByteArrayToHexString(vkBytes)} ");
-            skString = Helper.ByteArrayToHexString(skBytes).Substring(0, 64).ToLower();
+            Debug.Log($"sk: {Helper.ByteArrayToHexString(skBytes)}, vk: {Helper.ByteArrayToHexString(vkBytes)} ");            
             vkString = Helper.ByteArrayToHexString(vkBytes).ToLower();
         }
 
@@ -34,8 +33,20 @@ namespace LamdenUnity
             byte[] seed = new byte[SEED_LEN];
             NativeLibsodium.crypto_sign_ed25519_sk_to_seed(seed, skBytes);
             NativeLibsodium.crypto_sign_seed_keypair(vkBytes, skBytes, seed);
-            Debug.Log($"sk: {Helper.ByteArrayToHexString(skBytes)}, vk: {Helper.ByteArrayToHexString(vkBytes)} ");
-            skString = Helper.ByteArrayToHexString(skBytes).Substring(0, 64).ToLower();
+
+            // The x64 versions of the library require a 64 byte array for the sk that is the sk+vk
+            byte[] temp = new byte[SKEY_LEN];            
+            for (int i = 0; i < 32; i++)
+            {
+                temp[i] = skBytes[i];
+            }
+            for (int i = 0; i < 32; i++)
+            {
+                temp[i + 32] = vkBytes[i];
+            }
+            skBytes = temp;
+
+            Debug.Log($"sk: {Helper.ByteArrayToHexString(skBytes)}, vk: {Helper.ByteArrayToHexString(vkBytes)} ");            
             vkString = Helper.ByteArrayToHexString(vkBytes).ToLower();
         }
     }

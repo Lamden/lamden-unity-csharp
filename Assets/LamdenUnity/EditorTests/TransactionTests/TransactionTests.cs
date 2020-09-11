@@ -55,7 +55,7 @@ namespace Tests
                 kwargs = new Dictionary<string, KwargType>
                 {
                     {"to", new KT_String("4680c6ea89ffc29b0b670a5712edef2b62bc0cf40bfba2f20bbba759cdd185b9")},
-                    {"amount", new KT_Int(1)}
+                    {"amount", new KT_Numerical(1.0f)}
                 }
             };
 
@@ -81,7 +81,7 @@ namespace Tests
         {
             SetupGood();
             Wallet wallet = new Wallet();
-            wallet.Load("c8a3c5333aa3b058c4fa16d48db52355ab62ddc8daa9a183706a912e522440b6");
+            wallet.Load("3b1efc0a2cfd9d92581afc927c443bb53157fffae0f533995f2830643542467c");
 
 
             TxInfo txInfo = new TxInfo()
@@ -94,7 +94,7 @@ namespace Tests
                 {
                     {"UID", new KT_UID("testing2")},
                     {"Str", new KT_String("this is another string")},
-                    {"Float", new KT_Numerical(1.0f)},
+                    {"Float", new KT_Numerical(1.1f)},
                     {"Int", new KT_Int(2)},
                     {"Bool", new KT_Bool(false)},
                     {"Dict", new KT_Dict(new Dictionary<string, KwargType>{ {"test", new KT_String("my test")}})},

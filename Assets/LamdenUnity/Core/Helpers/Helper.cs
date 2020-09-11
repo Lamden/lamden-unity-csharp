@@ -40,7 +40,7 @@ namespace LamdenUnity
 
         public static string ByteArrayToHexString(byte[] arr)
         {
-            return BitConverter.ToString(arr).Replace("-", "");
+            return BitConverter.ToString(arr).Replace("-", "").ToLower();
         }
 
         public static bool isValidKeyString(string key)

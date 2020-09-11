@@ -12,16 +12,27 @@ namespace LamdenUnity
     {
         private KeyPair keyPair;
 
+        public bool initialized { get { return intited; } }
+        private bool intited = false;
+
+
+        byte[] lastMsgBytes;
+
         public void New()
         {
             keyPair = new KeyPair();
+            intited = true;
         }
 
-        public void Load(string sk)
+        public bool Load(string sk)
         {
-            byte[] skBytes = Helper.StringToByteArray(sk, 64);
-            Debug.Log($"original: {sk}, decoded: {Helper.ByteArrayToHexString(skBytes)}");
-            keyPair = new KeyPair(sk);
+            if (Helper.isValidKeyString(sk))
+            {                
+                keyPair = new KeyPair(sk);
+                intited = true;
+                return true;
+            }
+            return false;
         }
 
         public string GetSignatureString(string msg) {
@@ -50,9 +61,18 @@ namespace LamdenUnity
             byte[] sig = new byte[64];
             long sigLen = 0;
             try
-            {
+            {               
+                if (lastMsgBytes != msg)
+                {
+                    Debug.LogWarning("Warning msg does not match:");
+                    Debug.LogWarning(Encoding.ASCII.GetString(msg));
+                }
+                Debug.Log($"signing message of len {msg.Length} with sk of: {GetSK()}");
                 if (NativeLibsodium.crypto_sign_detached(sig, ref sigLen, msg, msg.Length, keyPair.skBytes) == 0)
+                {
+                    lastMsgBytes = msg;
                     return sig;
+                }
             }
             catch (Exception ex)
             {

@@ -13,15 +13,10 @@ namespace LamdenUnity
         public string hash;
         public string result;
         public int stamps_used;
-        public List<State> state;
+        public JSONNode state;
+        //public List<State> state;
         public int status;
         public TxData transaction;
-
-        [Serializable]
-        public class State
-        {
-            public string stateJson;
-        }
 
         [Serializable]
         public class Metadata
@@ -29,7 +24,33 @@ namespace LamdenUnity
             public string signature;
             public int timestamp;
         }
-        
-        
+
+
+        [Serializable]
+        public class TxData
+        {
+            public Metadata metadata = new Metadata();
+            public Payload payload = new Payload();
+
+            [Serializable]
+            public class Metadata
+            {
+                public string signature;
+                public int timestamp;
+            }
+
+            [Serializable]
+            public class Payload
+            {
+                public string contract;
+                public string function;
+                public JSONNode kwargs;
+                public int nonce;
+                public string processor;
+                public string sender;
+                public int stamps_supplied;
+            }
+        }
+
     }
 }

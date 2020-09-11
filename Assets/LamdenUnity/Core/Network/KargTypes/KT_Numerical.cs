@@ -18,7 +18,7 @@ namespace LamdenUnity
 
         public override string ToString()
         {
-            return $"{{\"__fixed__\":\"{value}\"}}";
+            return $"{{\"__fixed__\":\"{value.ToString("0.0#########")}\"}}";
         }
     }
 }

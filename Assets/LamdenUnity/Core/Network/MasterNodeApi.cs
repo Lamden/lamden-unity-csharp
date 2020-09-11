@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using unity.libsodium;
 using UnityEngine;
 using UnityEngine.Networking;
 using static LamdenUnity.ContractMethodsData;
@@ -16,6 +17,7 @@ namespace LamdenUnity
 
         private void Awake()
         {
+            NativeLibsodium.sodium_init();
             SetNetworkInfo(networkInfo);
         }
 
