@@ -187,8 +187,69 @@ namespace LamdenUnity
                    null,
                      (string json, bool callCompleted) =>
                      {
-                         callBack?.Invoke(callCompleted, json);
+                         callBack?.Invoke(SUCCESS, json);
                      }));
+        }
+
+        public void GetStampRatio(Action<bool, int> callBack)
+        {
+            StartCoroutine(
+                     SendRequest(
+                         null,
+                         Method.GET,
+                         "contracts/stamp_cost/S?key=value",
+                         null,
+                         null,
+                         (string json, bool callCompleted) =>
+                         {
+                             if (callCompleted)
+                             {
+                                 try
+                                 {
+                                     StampRatioResponse stampRatioResponse = JsonUtility.FromJson<StampRatioResponse>(json);
+                                     Debug.Log($"GetStampRatio Response:{stampRatioResponse.value}");
+                                     callBack?.Invoke(SUCCESS, stampRatioResponse.value);
+                                     return;
+                                 }
+                                 catch (Exception)
+                                 {
+                                     Debug.LogError($"GetStampRatio: unable to deserlize json response: {json}");
+                                 }
+                             }
+
+                             callBack?.Invoke(false, -1);
+
+                         }));
+        }
+
+        public void GetMaxStamps(string key, Action<bool, int> callBack)
+        {         
+          
+            GetCurrencyBalance(key, (bool getCurSuccessful, float currency) =>
+            {
+                if(getCurSuccessful)
+                { 
+                    GetStampRatio((bool getStampRatioSuccesful, int stampRatio) => {
+                        if (getStampRatioSuccesful)
+                        {
+                            int maxStamps = (int)(stampRatio * currency);
+                            Debug.Log($"GetMaxStamps Response:{maxStamps}");
+                            callBack?.Invoke(SUCCESS, maxStamps);
+                        }
+                        else
+                        {
+                            Debug.LogError($"GetMaxStamps: Unable to get stamp ratio.");
+                            callBack?.Invoke(FAILED, -1);
+                        }
+                    });
+                }   
+                else
+                {
+                    callBack?.Invoke(FAILED, -1);
+                    Debug.LogError($"GetMaxStamps: Unable to get currency.");
+                    return;
+                }
+            });
         }
     }
 }

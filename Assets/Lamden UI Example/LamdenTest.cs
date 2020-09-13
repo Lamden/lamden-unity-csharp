@@ -8,8 +8,6 @@ using UnityEngine.Assertions;
 
 public class LamdenTest : MonoBehaviour
 {
-    string vk = "4680c6ea89ffc29b0b670a5712edef2b62bc0cf40bfba2f20bbba759cdd185b9";   
-
     public MasterNodeApi masterNodeApi;
 
     public InputField inputSKtoVK, inputMsg, inputSig, inputSK, inputVK, inputBalance, inputMsgToSign, inputMsgSig;
@@ -17,8 +15,6 @@ public class LamdenTest : MonoBehaviour
     Wallet wallet;
 
     public Image imagePing;
-
-   
 
     // Start is called before the first frame update
     void Start()

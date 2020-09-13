@@ -165,7 +165,7 @@ namespace Tests
         public IEnumerator CheckTransactionTest()
         {
             SetupGood();
-            masterNodeApiGood.CheckTransaction(null, "3d2b98180bb429a7ca2e5fd81f0cc5cf30a4af6bf4f83eca90685472769703b7", (bool callCompleted, string json) =>
+            masterNodeApiGood.CheckTransaction(null, vk, (bool callCompleted, string json) =>
             {
                 Debug.Log($"CheckTransactionTest results: {json}");
                 CheckTransactionData transactionData = JsonUtility.FromJson<CheckTransactionData>(json);
@@ -173,6 +173,32 @@ namespace Tests
                 var n = JSON.Parse(json);
                 Assert.AreEqual(transactionData.status, 0);
                 Assert.True(callCompleted);
+            });
+            while (!calledBack) { yield return null; }
+        }
+
+        [UnityTest]
+        public IEnumerator GetStampRatioTest()
+        {
+            SetupGood();
+            masterNodeApiGood.GetStampRatio((bool callCompleted, int stampRatio) =>
+            {
+                calledBack = true;
+                Assert.True(callCompleted);
+                Assert.Greater(stampRatio, -1);
+            });
+            while (!calledBack) { yield return null; }
+        }
+
+        [UnityTest]
+        public IEnumerator GetMaxStamps()
+        {
+            SetupGood();
+            masterNodeApiGood.GetMaxStamps(vk, (bool callCompleted, int maxStamps) =>
+            {
+                calledBack = true;
+                Assert.True(callCompleted);
+                Assert.Greater(maxStamps, -1);
             });
             while (!calledBack) { yield return null; }
         }
