@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
@@ -101,9 +102,12 @@ namespace LamdenUnity
             if (parms != null)
             {
                 uri += "?";
+                var last = parms.Last();
                 foreach (var item in parms)
                 {
                     uri += $"{item.Key}={item.Value}";
+                    if (!item.Equals(last))
+                        uri += "&";
                 }
             }
 

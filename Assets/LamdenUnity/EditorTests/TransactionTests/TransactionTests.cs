@@ -55,7 +55,7 @@ namespace Tests
                 kwargs = new Dictionary<string, KwargType>
                 {
                     {"to", new KT_String("4680c6ea89ffc29b0b670a5712edef2b62bc0cf40bfba2f20bbba759cdd185b9")},
-                    {"amount", new KT_Numerical(1.0f)}
+                    {"amount", new KT_Numeric(1.0f)}
                 }
             };
 
@@ -94,12 +94,12 @@ namespace Tests
                 {
                     {"UID", new KT_UID("testing2")},
                     {"Str", new KT_String("this is another string")},
-                    {"Float", new KT_Numerical(1.1f)},
+                    {"Float", new KT_Numeric(1.1f)},
                     {"Int", new KT_Int(2)},
                     {"Bool", new KT_Bool(false)},
                     {"Dict", new KT_Dict(new Dictionary<string, KwargType>{ {"test", new KT_String("my test")}})},
-                    {"List", new KT_List(new List<KwargType>{ new KT_Numerical(1.2f), new KT_String("test2")})},
-                    {"ANY", new KT_Numerical(1.1f) },
+                    {"List", new KT_List(new List<KwargType>{ new KT_Numeric(1.2f), new KT_String("test2")})},
+                    {"ANY", new KT_Numeric(1.1f) },
                     {"DateTime", new KT_DateTime(DateTime.Now)},
                     {"TimeDelta", new KT_TimeDelta(4898)}
                 }

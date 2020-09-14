@@ -1,14 +1,15 @@
 fileFormatVersion: 2
 guid: f6298528826334fc8ba34d121eb15c06
-timeCreated: 1479231351
-licenseType: Free
 PluginImporter:
   externalObjects: {}
   serializedVersion: 2
   iconMap: {}
   executionOrder: {}
+  defineConstraints: []
   isPreloaded: 0
   isOverridable: 0
+  isExplicitlyReferenced: 0
+  validateReferences: 1
   platformData:
   - first:
       '': Any
@@ -21,13 +22,15 @@ PluginImporter:
         Exclude Linux64: 1
         Exclude LinuxUniversal: 1
         Exclude OSXUniversal: 1
+        Exclude WebGL: 1
         Exclude Win: 1
         Exclude Win64: 1
   - first:
       Android: Android
     second:
       enabled: 1
-      settings: {}
+      settings:
+        CPU: x86
   - first:
       Any: 
     second:
@@ -38,7 +41,9 @@ PluginImporter:
     second:
       enabled: 0
       settings:
+        CPU: AnyCPU
         DefaultValueInitialized: true
+        OS: AnyOS
   - first:
       Facebook: Win
     second:

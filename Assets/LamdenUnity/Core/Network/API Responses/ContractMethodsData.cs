@@ -3,7 +3,7 @@
 namespace LamdenUnity
 {
     [Serializable]
-    public class ContractMethodsData : MyJson
+    public class ContractMethodsData
     {
         public Methods[] methods;
 

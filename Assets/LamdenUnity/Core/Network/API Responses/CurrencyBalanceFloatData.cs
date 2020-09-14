@@ -4,7 +4,7 @@ using UnityEngine;
 namespace LamdenUnity
 {
     [Serializable]
-    public class CurrencyBalanceFloatData : MyJson
+    public class CurrencyBalanceFloatData
     {
         public Value value;
 
@@ -26,7 +26,7 @@ namespace LamdenUnity
         }
     }
 
-    public class CurrencyBalanceIntData : MyJson
+    public class CurrencyBalanceIntData
     {
         public int value;
 

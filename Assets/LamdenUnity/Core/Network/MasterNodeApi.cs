@@ -36,14 +36,14 @@ namespace LamdenUnity
                      }));
         }
 
-        public void GetVariable(string contractName, string variable, string key, Action<bool, string> callBack)
+        public void GetVariable(string contractName, string variable, Dictionary<string, string> keys, Action<bool, string> callBack)
         {
             StartCoroutine(
                SendRequest(
                    null,
                     Method.GET,
                      $"contracts/{contractName}/{variable}",
-                    new Dictionary<string, string> { { "key", key } },
+                    keys,
                     null,
                      (string json, bool callCompleted) =>
                      {
@@ -187,7 +187,10 @@ namespace LamdenUnity
                    null,
                      (string json, bool callCompleted) =>
                      {
-                         callBack?.Invoke(SUCCESS, json);
+                         if(callCompleted)
+                            callBack?.Invoke(SUCCESS, json);
+                         else
+                             callBack?.Invoke(FAILED, json);
                      }));
         }
 

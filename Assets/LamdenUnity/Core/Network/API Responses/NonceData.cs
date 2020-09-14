@@ -8,7 +8,7 @@ using UnityEngine;
 namespace LamdenUnity
 {
     [Serializable]
-    class NonceData : MyJson
+    class NonceData
     {
         public int nonce;
         public string processor;

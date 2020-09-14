@@ -29,34 +29,34 @@ public class Test_Values : MonoBehaviour
             contractName = "con_values_testing",
             methodName = "test_values",
             stampLimit = 100,
-            //kwargs = new Dictionary<string, KwargType>
-            //    {
-            //        {"UID", new KT_UID(inUid.text)},
-            //        {"Str", new KT_String(inStr.text)},
-            //        {"Float", new KT_Numerical(float.Parse(inFloat.text))},
-            //        {"Int", new KT_Int(int.Parse(InInt.text))},
-            //        {"Bool", new KT_Bool(ddBool.value == 0 ? true : false)},
-
-            //        {"Dict", new KT_Dict(new Dictionary<string, KwargType>{ {"test", new KT_String("my test")}})},
-            //        {"List", new KT_List(new List<KwargType>{ new KT_Numerical(1.2f), new KT_String("test2")})},
-            //        {"ANY", new KT_Numerical(1.1f)},
-            //        {"DateTime", new KT_DateTime(DateTime.Now)},
-            //        {"TimeDelta", new KT_TimeDelta(4898)}
-            //    }
-
             kwargs = new Dictionary<string, KwargType>
-              {
-                  {"UID", new KT_UID("testing2")},
-                  {"Str", new KT_String("this is another string")},
-                  {"Float", new KT_Numerical(1.1f)},
-                  {"Int", new KT_Int(2)},
-                  {"Bool", new KT_Bool(false)},
-                  {"Dict", new KT_Dict(new Dictionary<string, KwargType>{ {"test", new KT_String("my test")}})},
-                  {"List", new KT_List(new List<KwargType>{ new KT_Numerical(1.2f), new KT_String("test2")})},
-                  {"ANY", new KT_Numerical(1.1f) },
-                  {"DateTime", new KT_DateTime(DateTime.Now)},
-                  {"TimeDelta", new KT_TimeDelta(4898)}
-              }
+                {
+                    {"UID", new KT_UID(inUid.text)},
+                    {"Str", new KT_String(inStr.text)},
+                    {"Float", new KT_Numeric(float.Parse(inFloat.text))},
+                    {"Int", new KT_Int(int.Parse(InInt.text))},
+                    {"Bool", new KT_Bool(ddBool.value == 0 ? true : false)},
+
+                    {"Dict", new KT_Dict(new Dictionary<string, KwargType>{ {"test", new KT_String("my test")}})},
+                    {"List", new KT_List(new List<KwargType>{ new KT_Numeric(1.2f), new KT_String("test2")})},
+                    {"ANY", new KT_Numeric(1.1f)},
+                    {"DateTime", new KT_DateTime(DateTime.Now)},
+                    {"TimeDelta", new KT_TimeDelta(4898)}
+                }
+
+            //kwargs = new Dictionary<string, KwargType>
+            //  {
+            //      {"UID", new KT_UID("testing2")},
+            //      {"Str", new KT_String("this is another string")},
+            //      {"Float", new KT_Numeric(1.1f)},
+            //      {"Int", new KT_Int(2)},
+            //      {"Bool", new KT_Bool(false)},
+            //      {"Dict", new KT_Dict(new Dictionary<string, KwargType>{ {"test", new KT_String("my test")}})},
+            //      {"List", new KT_List(new List<KwargType>{ new KT_Numeric(1.2f), new KT_String("test2")})},
+            //      {"ANY", new KT_Numeric(1.1f) },
+            //      {"DateTime", new KT_DateTime(DateTime.Now)},
+            //      {"TimeDelta", new KT_TimeDelta(4898)}
+            //  }
         };
 
         Transaction tx = new Transaction(lamdenTest.masterNodeApi, txInfo, (Transaction.TransactionStatus txStatus, TxResponse txResponse) => {

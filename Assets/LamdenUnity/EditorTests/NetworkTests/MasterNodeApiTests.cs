@@ -107,9 +107,10 @@ namespace Tests
         public IEnumerator GetVariableTest()
         {
             SetupGood();
-            masterNodeApiGood.GetVariable("currency", "balances", vk, (bool callCompleted, string json) =>
+            Dictionary<string, string> keys = new Dictionary<string, string> { {"key", "testing:str"} };
+            masterNodeApiGood.GetVariable("con_values_testing", "S", keys, (bool callCompleted, string json) =>
             {
-                Debug.Log($"GetCurrencyBalance results: {json}");
+                Debug.Log($"GetVariableTest results: {json}");
                 calledBack = true;                
                 Assert.True(callCompleted);              
             });
@@ -165,7 +166,8 @@ namespace Tests
         public IEnumerator CheckTransactionTest()
         {
             SetupGood();
-            masterNodeApiGood.CheckTransaction(null, vk, (bool callCompleted, string json) =>
+            string hash = "3d2b98180bb429a7ca2e5fd81f0cc5cf30a4af6bf4f83eca90685472769703b7";
+            masterNodeApiGood.CheckTransaction(null, hash, (bool callCompleted, string json) =>
             {
                 Debug.Log($"CheckTransactionTest results: {json}");
                 CheckTransactionData transactionData = JsonUtility.FromJson<CheckTransactionData>(json);

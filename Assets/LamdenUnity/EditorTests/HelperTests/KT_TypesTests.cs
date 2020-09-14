@@ -7,13 +7,13 @@ using LamdenUnity;
 
 namespace Tests
 {
-    public class EncodingTests
+    public class KT_TypesTests
     {
         string dateString = "2020-07-28T19:16:35.059Z";
         int millisecondsDelta = 475200000;
 
         [Test]
-        public void EncodeDateTimeTest()
+        public void KT_DateTimeTest()
         {
             string encoded = new KT_DateTime(dateString).ToString();
             string provided = "[2020,7,28,19,16,35,59]";
@@ -21,9 +21,9 @@ namespace Tests
             Assert.AreEqual(encoded, provided);
         }
 
-       
+
         [Test]
-        public void EncodeTimeDeltaTest()
+        public void KT_TimeDeltaTest()
         {
             string encoded = new KT_TimeDelta(millisecondsDelta).ToString();
             string provided = "[5,43200]";
@@ -32,16 +32,16 @@ namespace Tests
         }
 
         [Test]
-        public void FloatTest ()
+        public void KT_NumericTest()
         {
-            string encoded = new KT_Numerical(1.1f).ToString();
+            string encoded = new KT_Numeric(1.1f).ToString();
             string provided = "{\"__fixed__\":\"1.1\"}";
             Debug.Log($"FloatTest: {encoded}");
             Assert.AreEqual(encoded, provided);
         }
 
         [Test]
-        public void DictTest()
+        public void KT_DictTest()
         {
             Dictionary<string, KwargType> dict = new Dictionary<string, KwargType>();
             dict.Add("btest", new KT_Bool(false));
@@ -53,17 +53,42 @@ namespace Tests
         }
 
         [Test]
-        public void ListTest()
+        public void KT_ListTest()
         {
             List<KwargType> list = new List<KwargType>();
             list.Add(new KT_Bool(false));
-            list.Add( new KT_Int(1));
+            list.Add(new KT_Int(1));
             string encoded = new KT_List(list).ToString();
             string provided = "[false,1]";
             Debug.Log($"ListTest: {encoded}");
             Assert.AreEqual(encoded, provided);
         }
 
-       
+        [Test]
+        public void KT_BoolTest()
+        {
+            KT_Bool ktBoolTrue = new KT_Bool(true);
+            Assert.AreEqual("true", ktBoolTrue.ToString());
+
+            KT_Bool ktBoolFalse = new KT_Bool(false);
+            Assert.AreEqual("false", ktBoolFalse.ToString());
+
+        }
+
+        [Test]
+        public void KT_StringTest()
+        {
+            KT_String ktString = new KT_String("testing value");
+            Assert.AreEqual("\"testing value\"", ktString.ToString());
+        }
+
+        [Test]
+        public void KT_UIDTest()
+        {
+            KT_UID ktUid = new KT_UID("testing value");
+            Assert.AreEqual("\"testing value\"", ktUid.ToString());
+        }
+
+
     }
 }
