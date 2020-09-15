@@ -18,7 +18,7 @@ A Unity package to simplify the integration of [Lamden Blockchain](https://lamde
 
 ## Installation
 
-1. Download the package from [HERE](/releases/latest)
+1. Download the package from [HERE](https://github.com/Lamden/lamden-unity-csharp/releases/latest)
 1.  In your Unity project select 'Assets > Import Package > Custom Package'
 1. Select the downloaded package
 1. Ensure all items are selected and choose 'Import'
