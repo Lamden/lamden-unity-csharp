@@ -137,7 +137,7 @@ Note all the `KT_` classes hold the specific contract argument types that relate
 
 After the transaction has been sumbitted the status will be returned the `Action` passed into the transaction contructor.  I like using lamba expressions for the `Action` below is an example that updates a text field as the transaction is processed.
 
-````
+```
       Transaction tx = new Transaction(lamdenTest.masterNodeApi, txInfo, (Transaction.TransactionStatus txStatus, TxResponse txResponse) => {
             if (txStatus == Transaction.TransactionStatus.SubmittedProcessing)
                 txtStatus.text = "Sumbitted and processing...";
