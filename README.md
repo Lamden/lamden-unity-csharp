@@ -56,23 +56,28 @@ Afer adding the `LamdenManager` to the scene the next thing to do is create a La
 Once a wallet has been generated or loaded API calls can be made through the `MasterNodeApi` is added to the `LamdenManager` gameobject. As the network calls are performed using cooroutines the `MasterNodeApi` must be called attached to a gameobject. The basic structure on all the API calls is to execute an `Action` after the request has been executed and return the results in the action arguments.  The first argument in the `Action` will be a `bool` that indicates if the request was successful.  The other arguments generally contain more infomation and are specific to the action.
 
 There are several useful API calls built into the `MasterNodeApi` script:
+
+## Ping
 * `PingServer(Action<bool, string> callBack)`: Calls the `<master node>/ping` API to determine if the network is up
  * Action Argurments: 
    * `bool`:The first bool arg will be true if the server responds `online`, if the server is unreachable or reports offline it will respond with false
    * `string`: Returns the error message or json response from the server in as a string
 
+## Get Currency Balance
 * `GetCurrencyBalance(string key, Action<bool, float> callBack)`: Retreives the account balance of for the wallet from the server
  * Argurments:
   * `key`: The VK of the wallet for the request
  * Action Argurments: 
-   * `bool`: `true` = call successful, `false` = call failed
-   * `float`: Successful: The balance of the wallet for a  request, Failed: `-1`
+  * `bool`: `true` = call successful, `false` = call failed
+  * `float`: Successful: The balance of the wallet for a  request, Failed: `-1`
 
+## Get Stamp Ratio
 * `GetStampRatio(Action<bool, int> callBack)`: Get the number of stamps per 1 TAU (stamps are the fee that the sender of the transaction pay for it to be processed)
  * Action Argurments: 
    * `bool`: `true` = call successful, `false` = call failed
    * `int`: Successful: The number of stamps per 1 TAU, failed: `-1`
 
+## Get Max Stamps
 * `GetMaxStamps(string key, Action<bool, int> callBack)`: Get the maximum number of stamps a user could spend (stamp ratio * currency balance)
  * Argurments:
   * `key`: The VK of the wallet for the request
