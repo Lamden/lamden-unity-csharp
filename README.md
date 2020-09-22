@@ -207,4 +207,6 @@ If the transaction `TransactionStatus` returned as error there will be more info
 }
 ```
 
+## MORE
+
 For more details there are unit tests that run the Unity Test Framework to test all the methods that provide good example of usage.  Also, there is a example scene under `Assets\Lamden UI Example` that implements a GUI that can create a wallet, ping the server and submit a transaction.
