@@ -164,6 +164,7 @@ The `TxResponse` class will contain extra infomation about the transaction inclu
 
 If the transaction `TransactionStatus` returned as error there will be more information in the `TransactionStatus.error` string.  If the transaction status was returned as `Completed` the `TransactionStatus.transactionData` will contain a lot of data about the transacation that was completed held in the `CheckTransactionData` class. Below is the JSON data that is returned.
 
+
 ```
 {
    "hash":"e05c4e5024bca67dcf7a8688f10692af435b3f7466cd06ed9596e9097b0a65e4",
