@@ -9,10 +9,14 @@ public class Test_Values : MonoBehaviour
 {
     public LamdenTest lamdenTest;
 
-    public InputField inUid, inStr, inFloat, InInt;
+    public InputField inUid, inStr, inFloat, InInt, inGetValueUIDVar, inGetValueOutput;
     public Dropdown ddBool;
 
     public Text txtStatus;
+
+    string contractName = "con_values_testing";
+    string methodName = "test_values";
+
 
     // Start is called before the first frame update
     void Start()
@@ -26,8 +30,8 @@ public class Test_Values : MonoBehaviour
         TxInfo txInfo = new TxInfo()
         {
             sender = lamdenTest.GetWallet(),
-            contractName = "con_values_testing",
-            methodName = "test_values",
+            contractName = contractName,
+            methodName = methodName,
             stampLimit = 100,
             kwargs = new Dictionary<string, KwargType>
                 {
@@ -69,5 +73,14 @@ public class Test_Values : MonoBehaviour
             if (txStatus == Transaction.TransactionStatus.Error)
                 txtStatus.text = txResponse.error;
         });
+    }
+
+    public void GetValue()
+    {
+        lamdenTest.masterNodeApi.GetVariable(
+            contractName, "S", new Dictionary<string, string>() { { "key", inGetValueUIDVar.text } }, (bool success, string result) => {
+                inGetValueOutput.text = result;
+            });
+
     }
 }

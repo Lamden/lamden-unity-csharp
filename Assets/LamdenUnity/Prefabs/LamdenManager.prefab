@@ -46,8 +46,8 @@ MonoBehaviour:
   timeout: 10000
   networkInfo:
     hosts:
-    - http://167.172.126.5:18080/
+    - https://testnet-master-1.lamden.io/
     networkType: testnet
-    currencySymbol: TAU
+    currencySymbol: dTAU
     lamden: 1
-    blockExplorer: https://explorer.lamden.io
+    blockExplorer: https://testnet.lamden.io/
