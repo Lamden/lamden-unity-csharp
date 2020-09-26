@@ -18,7 +18,7 @@ namespace Tests
 
         MasterNodeApi masterNodeApiGood;
         MasterNodeApi masterNodeApiBad;
-        const string goodHost = "http://167.172.126.5:18080/";
+        const string goodHost = "https://testnet-master-1.lamden.io/";
         const string badHost = "http://127.1.1.1:18080/";
 
         NetworkInfo goodNetwork = new NetworkInfo()
@@ -61,7 +61,7 @@ namespace Tests
         public void TestSetup()
         {
             SetupGood();
-            Assert.True(masterNodeApiGood.host.Equals(goodHost));
+            Assert.AreEqual(masterNodeApiGood.host, goodHost);
             var ex = Assert.Throws<Exception>(() => masterNodeApiGood.SetNetworkInfo(null));
             Assert.That(ex.Message, Is.EqualTo("networkInfo cannot be null"));
         }
@@ -107,7 +107,7 @@ namespace Tests
         public IEnumerator GetVariableTest()
         {
             SetupGood();
-            Dictionary<string, string> keys = new Dictionary<string, string> { {"key", "testing:str"} };
+            Dictionary<string, string> keys = new Dictionary<string, string> { {"key", "testing:Str"} };
             masterNodeApiGood.GetVariable("con_values_testing", "S", keys, (bool callCompleted, string json) =>
             {
                 Debug.Log($"GetVariableTest results: {json}");
@@ -166,7 +166,7 @@ namespace Tests
         public IEnumerator CheckTransactionTest()
         {
             SetupGood();
-            string hash = "3d2b98180bb429a7ca2e5fd81f0cc5cf30a4af6bf4f83eca90685472769703b7";
+            string hash = "440d856d3b21b76a40fc8cbc4a79e168225ec1688a470cdc43eb8329bf36ebb0";
             masterNodeApiGood.CheckTransaction(null, hash, (bool callCompleted, string json) =>
             {
                 Debug.Log($"CheckTransactionTest results: {json}");

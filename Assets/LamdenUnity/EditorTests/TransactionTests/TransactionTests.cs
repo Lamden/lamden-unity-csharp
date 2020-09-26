@@ -15,7 +15,7 @@ namespace Tests
         bool calledBack;
 
         MasterNodeApi masterNodeApiGood;
-        const string goodHost = "http://167.172.126.5:18080/";
+        const string goodHost = "https://testnet-master-1.lamden.io";
 
         NetworkInfo goodNetwork = new NetworkInfo()
         {
@@ -92,7 +92,7 @@ namespace Tests
                 stampLimit = 100,
                 kwargs = new Dictionary<string, KwargType>
                 {
-                    {"UID", new KT_UID("testing2")},
+                    {"UID", new KT_UID("testing")},
                     {"Str", new KT_String("this is another string")},
                     {"Float", new KT_Numeric(1.1f)},
                     {"Int", new KT_Int(2)},
